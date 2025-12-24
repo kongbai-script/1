@@ -1,0 +1,10 @@
+for i, v in next, getgc(false) do
+    if typeof(v) == "function" then
+        local info = getinfo(v)
+        if tostring(info.name) == "fireGun" then
+            local tab = getupvalue(v, 1)
+            rawset(tab, "Ammo", math.huge)
+            break
+        end
+    end
+end
