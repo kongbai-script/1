@@ -1,0 +1,13 @@
+local flareInterval = 0.5
+
+while true do
+    local args = {
+        workspace:WaitForChild("Game Systems"):WaitForChild("Helicopter Workspace"):WaitForChild("AH-6 Littlebird"):WaitForChild("Misc"):WaitForChild("Turrets"):WaitForChild("AH Weapons"):WaitForChild("Flares"),
+        workspace:WaitForChild("Game Systems"):WaitForChild("Helicopter Workspace"):WaitForChild("AH-6 Littlebird"),
+        workspace:WaitForChild("Game Systems"):WaitForChild("Helicopter Workspace"):WaitForChild("AH-6 Littlebird"):WaitForChild("Misc"):WaitForChild("Turrets"):WaitForChild("SoundPart")
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("RocketSystem"):WaitForChild("Events"):WaitForChild("FireFlare"):FireServer(unpack(args))
+    
+    wait(flareInterval)
+end
