@@ -1,0 +1,736 @@
+--[[
+    ⚡ Rayfield UI 超精细速度调节脚本
+    - 使用Rayfield UI库
+    - 速度范围：1-500
+    - 步进精度：1单位
+    - 支持键盘直接输入数字
+    - 支持滑块和按钮精细调节
+    - 卡密验证系统
+]]
+
+-- ========== 卡密验证系统 ==========
+local ValidKeys = {
+    "空白超牛逼",  -- 主卡密
+    "test123",      -- 测试卡密
+    "vip2025"       -- 备用卡密
+}
+
+local function ShowKeySystem()
+    -- 创建验证UI
+    local keyGui = Instance.new("ScreenGui")
+    keyGui.Name = "KeySystemGUI"
+    keyGui.ResetOnSpawn = false
+    keyGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+    
+    -- 主框架
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 400, 0, 300)
+    mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    mainFrame.BackgroundTransparency = 0.1
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = keyGui
+    
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 15)
+    frameCorner.Parent = mainFrame
+    
+    -- 标题
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.Position = UDim2.new(0, 0, 0, 20)
+    title.BackgroundTransparency = 1
+    title.Text = "🔐 卡密验证系统"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 24
+    title.Parent = mainFrame
+    
+    -- 提示文字
+    local hint = Instance.new("TextLabel")
+    hint.Size = UDim2.new(1, -40, 0, 40)
+    hint.Position = UDim2.new(0, 20, 0, 80)
+    hint.BackgroundTransparency = 1
+    hint.Text = "请输入卡密以继续使用"
+    hint.TextColor3 = Color3.fromRGB(200, 200, 200)
+    hint.Font = Enum.Font.Gotham
+    hint.TextSize = 16
+    hint.Parent = mainFrame
+    
+    -- 输入框
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(0.8, -20, 0, 45)
+    textBox.Position = UDim2.new(0.1, 10, 0, 130)
+    textBox.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+    textBox.BackgroundTransparency = 0.2
+    textBox.PlaceholderText = "在此输入卡密..."
+    textBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    textBox.Text = ""
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.Font = Enum.Font.Gotham
+    textBox.TextSize = 18
+    textBox.ClearTextOnFocus = false
+    textBox.Parent = mainFrame
+    
+    local boxCorner = Instance.new("UICorner")
+    boxCorner.CornerRadius = UDim.new(0, 8)
+    boxCorner.Parent = textBox
+    
+    -- 验证按钮
+    local verifyBtn = Instance.new("TextButton")
+    verifyBtn.Size = UDim2.new(0.8, -20, 0, 45)
+    verifyBtn.Position = UDim2.new(0.1, 10, 0, 190)
+    verifyBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+    verifyBtn.Text = "验证卡密"
+    verifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    verifyBtn.Font = Enum.Font.GothamBold
+    verifyBtn.TextSize = 18
+    verifyBtn.Parent = mainFrame
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = verifyBtn
+    
+    -- 状态显示
+    local statusLabel = Instance.new("TextLabel")
+    statusLabel.Size = UDim2.new(1, -40, 0, 30)
+    statusLabel.Position = UDim2.new(0, 20, 0, 245)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Text = "等待输入..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    statusLabel.Font = Enum.Font.Gotham
+    statusLabel.TextSize = 14
+    statusLabel.Parent = mainFrame
+    
+    -- 验证函数
+    local function VerifyKey(inputKey)
+        for _, validKey in ipairs(ValidKeys) do
+            if inputKey == validKey then
+                return true
+            end
+        end
+        return false
+    end
+    
+    -- 按钮点击事件
+    verifyBtn.MouseButton1Click:Connect(function()
+        local input = textBox.Text
+        if input == "" then
+            statusLabel.Text = "❌ 请输入卡密！"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            return
+        end
+        
+        if VerifyKey(input) then
+            statusLabel.Text = "✅ 验证成功！正在加载..."
+            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            
+            -- 延迟后销毁验证UI并加载主程序
+            wait(1)
+            keyGui:Destroy()
+            
+            -- 显示成功通知
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "验证成功",
+                Text = "欢迎使用速度控制系统",
+                Duration = 2
+            })
+            
+            -- 加载主程序
+            LoadMainScript()
+        else
+            statusLabel.Text = "❌ 卡密错误！"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            textBox.Text = ""
+        end
+    end)
+    
+    -- 回车键验证
+    textBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            verifyBtn.MouseButton1Click:Fire()
+        end
+    end)
+    
+    -- 防止点击穿透
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+end
+
+-- ========== 主程序 ==========
+function LoadMainScript()
+    -- 加载Rayfield UI库
+    local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+    -- 配置存储
+    getgenv().RayfieldSpeed = {
+        Enabled = false,
+        Speed = 16,
+        MinSpeed = 1,
+        MaxSpeed = 500,
+        Mode = "Smooth",
+        Smoothing = true,
+        ShowNotifications = true
+    }
+
+    -- 创建窗口
+    local Window = Rayfield:CreateWindow({
+        Name = "⚡ 超精细速度调节",
+        LoadingTitle = "Rayfield 速度系统",
+        LoadingSubtitle = "by Injector",
+        ConfigurationSaving = {
+            Enabled = true,
+            FolderName = "RayfieldSpeed",
+            FileName = "Settings"
+        },
+        Discord = {
+            Enabled = false,
+            Invite = "noinvitelink",
+            RememberJoins = true
+        },
+        KeySystem = false,  -- 关闭内置密钥系统，使用自定义
+        KeySettings = {
+            Title = "密钥系统",
+            Subtitle = "输入密钥",
+            Note = "无密钥，直接点击进入",
+            FileName = "Key",
+            SaveKey = false,
+            GrabKeyFromSite = false,
+            Key = {"1234"}
+        }
+    })
+
+    -- 主标签页
+    local MainTab = Window:CreateTab("主控制", 10734974240)
+    local MainSection = MainTab:CreateSection("速度控制")
+
+    -- 开关
+    local Toggle = MainTab:CreateToggle({
+        Name = "开启移速效果",
+        CurrentValue = false,
+        Flag = "ToggleSpeed",
+        Callback = function(Value)
+            getgenv().RayfieldSpeed.Enabled = Value
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度控制",
+                    Content = Value and "✅ 已开启" or "❌ 已关闭",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    -- 速度滑块
+    local SpeedSlider = MainTab:CreateSlider({
+        Name = "速度值",
+        Range = {1, 500},
+        Increment = 1,
+        Suffix = "单位",
+        CurrentValue = 16,
+        Flag = "SpeedSlider",
+        Callback = function(Value)
+            getgenv().RayfieldSpeed.Speed = Value
+        end
+    })
+
+    -- 模式选择下拉菜单
+    local ModeDropdown = MainTab:CreateDropdown({
+        Name = "移动模式",
+        Options = {"Smooth", "Balanced", "Fast", "Teleport", "BodyVelocity"},
+        CurrentOption = "Smooth",
+        Flag = "ModeDropdown",
+        Callback = function(Option)
+            getgenv().RayfieldSpeed.Mode = Option
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "模式切换",
+                    Content = "当前模式: " .. Option,
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    -- 平滑度开关
+    local SmoothingToggle = MainTab:CreateToggle({
+        Name = "平滑过渡",
+        CurrentValue = true,
+        Flag = "SmoothingToggle",
+        Callback = function(Value)
+            getgenv().RayfieldSpeed.Smoothing = Value
+        end
+    })
+
+    -- 键盘输入标签页
+    local InputTab = Window:CreateTab("键盘输入", 10734974240)
+    local InputSection = InputTab:CreateSection("直接输入速度")
+
+    -- 当前速度显示
+    local CurrentSpeedLabel = InputTab:CreateLabel("当前速度: 16 单位")
+
+    -- 输入框
+    local InputBox = InputTab:CreateInput({
+        Name = "输入速度值",
+        PlaceholderText = "输入数字 (1-500)",
+        RemoveTextAfterFocusLost = false,
+        Callback = function(Text)
+            local num = tonumber(Text)
+            if num then
+                num = math.clamp(num, 1, 500)
+                num = math.floor(num)
+                getgenv().RayfieldSpeed.Speed = num
+                SpeedSlider:Set(num)
+                CurrentSpeedLabel:Set("当前速度: " .. num .. " 单位")
+                
+                if getgenv().RayfieldSpeed.ShowNotifications then
+                    Rayfield:Notify({
+                        Title = "速度已设置",
+                        Content = "当前速度: " .. num,
+                        Duration = 1.5,
+                        Image = 10734974240
+                    })
+                end
+            else
+                Rayfield:Notify({
+                    Title = "输入错误",
+                    Content = "请输入有效数字",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    -- 预设标签页
+    local PresetTab = Window:CreateTab("预设速度", 10734974240)
+    local PresetSection = PresetTab:CreateSection("快速设置")
+
+    -- 预设按钮
+    PresetTab:CreateButton({
+        Name = "🐢 龟速 (5)",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 5
+            SpeedSlider:Set(5)
+            CurrentSpeedLabel:Set("当前速度: 5 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度设置",
+                    Content = "当前速度: 5 (龟速)",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    PresetTab:CreateButton({
+        Name = "🚶 走路 (16)",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 16
+            SpeedSlider:Set(16)
+            CurrentSpeedLabel:Set("当前速度: 16 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度设置",
+                    Content = "当前速度: 16 (正常)",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    PresetTab:CreateButton({
+        Name = "🏃 小跑 (30)",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 30
+            SpeedSlider:Set(30)
+            CurrentSpeedLabel:Set("当前速度: 30 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度设置",
+                    Content = "当前速度: 30 (小跑)",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    PresetTab:CreateButton({
+        Name = "🚗 汽车 (50)",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 50
+            SpeedSlider:Set(50)
+            CurrentSpeedLabel:Set("当前速度: 50 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度设置",
+                    Content = "当前速度: 50 (汽车)",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    PresetTab:CreateButton({
+        Name = "✈️ 飞机 (100)",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 100
+            SpeedSlider:Set(100)
+            CurrentSpeedLabel:Set("当前速度: 100 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度设置",
+                    Content = "当前速度: 100 (飞机)",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    PresetTab:CreateButton({
+        Name = "🚀 火箭 (200)",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 200
+            SpeedSlider:Set(200)
+            CurrentSpeedLabel:Set("当前速度: 200 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度设置",
+                    Content = "当前速度: 200 (火箭)",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    -- 精细调节标签页
+    local FineTab = Window:CreateTab("精细调节", 10734974240)
+    local FineSection = FineTab:CreateSection("步进调节 (1单位)")
+
+    -- 加减按钮行
+    FineTab:CreateButton({
+        Name = "➖➖ 减速 (-10)",
+        Callback = function()
+            local newSpeed = math.max(1, getgenv().RayfieldSpeed.Speed - 10)
+            getgenv().RayfieldSpeed.Speed = newSpeed
+            SpeedSlider:Set(newSpeed)
+            CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度调整",
+                    Content = "当前速度: " .. newSpeed,
+                    Duration = 1,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    FineTab:CreateButton({
+        Name = "➖ 减速 (-5)",
+        Callback = function()
+            local newSpeed = math.max(1, getgenv().RayfieldSpeed.Speed - 5)
+            getgenv().RayfieldSpeed.Speed = newSpeed
+            SpeedSlider:Set(newSpeed)
+            CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度调整",
+                    Content = "当前速度: " .. newSpeed,
+                    Duration = 1,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    FineTab:CreateButton({
+        Name = "➖ 微减速 (-1)",
+        Callback = function()
+            local newSpeed = math.max(1, getgenv().RayfieldSpeed.Speed - 1)
+            getgenv().RayfieldSpeed.Speed = newSpeed
+            SpeedSlider:Set(newSpeed)
+            CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度调整",
+                    Content = "当前速度: " .. newSpeed,
+                    Duration = 1,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    FineTab:CreateButton({
+        Name = "➕ 微加速 (+1)",
+        Callback = function()
+            local newSpeed = math.min(500, getgenv().RayfieldSpeed.Speed + 1)
+            getgenv().RayfieldSpeed.Speed = newSpeed
+            SpeedSlider:Set(newSpeed)
+            CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度调整",
+                    Content = "当前速度: " .. newSpeed,
+                    Duration = 1,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    FineTab:CreateButton({
+        Name = "➕➕ 加速 (+5)",
+        Callback = function()
+            local newSpeed = math.min(500, getgenv().RayfieldSpeed.Speed + 5)
+            getgenv().RayfieldSpeed.Speed = newSpeed
+            SpeedSlider:Set(newSpeed)
+            CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度调整",
+                    Content = "当前速度: " .. newSpeed,
+                    Duration = 1,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    FineTab:CreateButton({
+        Name = "➕➕➕ 加速 (+10)",
+        Callback = function()
+            local newSpeed = math.min(500, getgenv().RayfieldSpeed.Speed + 10)
+            getgenv().RayfieldSpeed.Speed = newSpeed
+            SpeedSlider:Set(newSpeed)
+            CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度调整",
+                    Content = "当前速度: " .. newSpeed,
+                    Duration = 1,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    -- 设置标签页
+    local SettingsTab = Window:CreateTab("设置", 10734974240)
+    local SettingsSection = SettingsTab:CreateSection("其他设置")
+
+    -- 通知开关
+    SettingsTab:CreateToggle({
+        Name = "显示通知",
+        CurrentValue = true,
+        Flag = "NotifyToggle",
+        Callback = function(Value)
+            getgenv().RayfieldSpeed.ShowNotifications = Value
+        end
+    })
+
+    -- 重置按钮
+    SettingsTab:CreateButton({
+        Name = "重置为默认",
+        Callback = function()
+            getgenv().RayfieldSpeed.Speed = 16
+            getgenv().RayfieldSpeed.Mode = "Smooth"
+            getgenv().RayfieldSpeed.Smoothing = true
+            SpeedSlider:Set(16)
+            ModeDropdown:Set("Smooth")
+            SmoothingToggle:Set(true)
+            CurrentSpeedLabel:Set("当前速度: 16 单位")
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "设置重置",
+                    Content = "已恢复默认值",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+    })
+
+    -- 关闭UI按钮
+    SettingsTab:CreateButton({
+        Name = "关闭界面",
+        Callback = function()
+            Rayfield:Destroy()
+        end
+    })
+
+    -- 信息标签页
+    local InfoTab = Window:CreateTab("信息", 10734974240)
+    local InfoSection = InfoTab:CreateSection("关于")
+
+    InfoTab:CreateLabel("⚡ Rayfield UI 速度控制系统")
+    InfoTab:CreateLabel("版本: 2.0.0")
+    InfoTab:CreateLabel("作者: Injector Script")
+    InfoTab:CreateLabel("")
+    InfoTab:CreateLabel("📱 支持手机和PC")
+    InfoTab:CreateLabel("🎮 5种移动模式可选")
+    InfoTab:CreateLabel("⚙️ 可调节速度1-500")
+    InfoTab:CreateLabel("⌨️ 支持键盘直接输入")
+    InfoTab:CreateLabel("🔐 卡密验证: 空白超牛逼")
+
+    -- 状态显示
+    local StatusSection = InfoTab:CreateSection("当前状态")
+    local StatusLabel = InfoTab:CreateLabel("状态: 等待更新...")
+
+    -- 更新状态显示
+    spawn(function()
+        while wait(1) do
+            if getgenv().RayfieldSpeed.Enabled then
+                StatusLabel:Set("状态: ✅ 运行中\n速度: " .. getgenv().RayfieldSpeed.Speed .. "\n模式: " .. getgenv().RayfieldSpeed.Mode)
+            else
+                StatusLabel:Set("状态: ❌ 已关闭\n速度: --\n模式: --")
+            end
+        end
+    end)
+
+    -- ========== 移速效果主循环 ==========
+    local player = game:GetService("Players").LocalPlayer
+    local runService = game:GetService("RunService")
+    local userInputService = game:GetService("UserInputService")
+    local currentSpeed = 0
+
+    local function setupSpeedEffect()
+        runService.RenderStepped:Connect(function()
+            if not getgenv().RayfieldSpeed.Enabled then return end
+            
+            local character = player.Character
+            if not character then return end
+            
+            local humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid or humanoid.Health <= 0 then return end
+            
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if not rootPart then return end
+            
+            -- 获取移动方向
+            local moveDir = humanoid.MoveDirection
+            
+            if moveDir.Magnitude > 0.1 then
+                local targetSpeed = getgenv().RayfieldSpeed.Speed
+                local mode = getgenv().RayfieldSpeed.Mode
+                
+                -- 根据模式计算每帧移动距离
+                local frameMove = 0
+                
+                if mode == "Smooth" then
+                    frameMove = math.min(targetSpeed / 30, 3)
+                elseif mode == "Balanced" then
+                    frameMove = math.min(targetSpeed / 20, 5)
+                elseif mode == "Fast" then
+                    frameMove = math.min(targetSpeed / 10, 10)
+                elseif mode == "Teleport" then
+                    frameMove = targetSpeed / 8
+                elseif mode == "BodyVelocity" then
+                    -- 物理移动模式
+                    local bv = rootPart:FindFirstChild("RayfieldSpeedBV")
+                    if not bv then
+                        bv = Instance.new("BodyVelocity")
+                        bv.Name = "RayfieldSpeedBV"
+                        bv.MaxForce = Vector3.new(4000, 0, 4000)
+                        bv.Parent = rootPart
+                    end
+                    bv.Velocity = moveDir * targetSpeed * 2
+                    return
+                end
+                
+                -- 平滑过渡
+                if getgenv().RayfieldSpeed.Smoothing then
+                    currentSpeed = currentSpeed + (targetSpeed - currentSpeed) * 0.1
+                    frameMove = currentSpeed / 30
+                end
+                
+                -- 应用移动
+                local moveAmount = moveDir * frameMove
+                rootPart.CFrame = rootPart.CFrame + moveAmount
+            else
+                -- 移除物理效果
+                if rootPart then
+                    local bv = rootPart:FindFirstChild("RayfieldSpeedBV")
+                    if bv then bv:Destroy() end
+                end
+                currentSpeed = 0
+            end
+        end)
+    end
+
+    -- 启动移速效果
+    setupSpeedEffect()
+
+    -- 键盘快捷键
+    userInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        -- F8 开关效果
+        if input.KeyCode == Enum.KeyCode.F8 then
+            getgenv().RayfieldSpeed.Enabled = not getgenv().RayfieldSpeed.Enabled
+            Toggle:Set(getgenv().RayfieldSpeed.Enabled)
+            if getgenv().RayfieldSpeed.ShowNotifications then
+                Rayfield:Notify({
+                    Title = "速度控制",
+                    Content = getgenv().RayfieldSpeed.Enabled and "✅ 已开启" or "❌ 已关闭",
+                    Duration = 1.5,
+                    Image = 10734974240
+                })
+            end
+        end
+        
+        -- 数字键快速设置
+        if input.KeyCode == Enum.KeyCode.One then
+            getgenv().RayfieldSpeed.Speed = 16
+            SpeedSlider:Set(16)
+            CurrentSpeedLabel:Set("当前速度: 16 单位")
+        elseif input.KeyCode == Enum.KeyCode.Two then
+            getgenv().RayfieldSpeed.Speed = 30
+            SpeedSlider:Set(30)
+            CurrentSpeedLabel:Set("当前速度: 30 单位")
+        elseif input.KeyCode == Enum.KeyCode.Three then
+            getgenv().RayfieldSpeed.Speed = 50
+            SpeedSlider:Set(50)
+            CurrentSpeedLabel:Set("当前速度: 50 单位")
+        elseif input.KeyCode == Enum.KeyCode.Four then
+            getgenv().RayfieldSpeed.Speed = 100
+            SpeedSlider:Set(100)
+            CurrentSpeedLabel:Set("当前速度: 100 单位")
+        end
+    end)
+
+    -- 加载完成通知
+    Rayfield:Notify({
+        Title = "Rayfield 速度系统",
+        Content = "按 F8 开启/关闭效果\n输入数字直接设置速度",
+        Duration = 5,
+        Image = 10734974240
+    })
+
+    print("✅ Rayfield UI 速度脚本已加载")
+    print("📱 按 F8 开启/关闭效果")
+    print("⌨️ 在'键盘输入'标签页直接输入数字")
+    print("🔐 卡密: 空白超牛逼")
+end
+
+-- ========== 启动验证 ==========
+ShowKeySystem()
+
+-- 通知验证开始
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "卡密验证",
+    Text = "请输入卡密继续",
+    Duration = 3
+})
+
+print("🔐 卡密验证系统已启动")
+print("💡 卡密: 空白超牛逼")
