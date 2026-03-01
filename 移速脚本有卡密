@@ -22,9 +22,7 @@ local WhitelistedUsers = {
     "User2",               -- 示例用户2
     "VIP_Player",          -- VIP玩家
     "Admin",               -- 管理员
-    "TestUser",            -- 测试用户
-    ""
-    ""
+    "TestUser",            -- 测试用
     -- 可以继续添加更多用户名
 }
 
