@@ -1,0 +1,343 @@
+--[[
+    🔮 Obsidian UI 超精细速度调节脚本
+    - 使用Obsidian UI库
+    - 速度范围：1-500
+    - 步进精度：1单位
+    - 支持键盘直接输入数字
+    - 支持滑块和按钮精细调节
+]]
+
+-- 加载Obsidian UI库
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
+local Window = Library:Create("⚡ 超精细速度调节")
+
+-- 配置存储
+getgenv().ObsidianSpeed = {
+    Enabled = false,
+    Speed = 16,
+    MinSpeed = 1,
+    MaxSpeed = 500,
+    Mode = "Smooth",
+    Smoothing = true,
+    ShowNotifications = true
+}
+
+-- 主标签页
+local MainTab = Window:Tab("主控制", "rbxassetid://10734974240")
+
+-- 开关
+MainTab:Toggle("开启移速效果", false, function(Value)
+    getgenv().ObsidianSpeed.Enabled = Value
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度控制", Value and "✅ 已开启" or "❌ 已关闭", 2)
+    end
+end)
+
+-- 速度滑块
+MainTab:Slider("速度值", 1, 500, 16, function(Value)
+    getgenv().ObsidianSpeed.Speed = Value
+end)
+
+-- 模式选择
+MainTab:Dropdown("移动模式", {"Smooth", "Balanced", "Fast", "Teleport", "BodyVelocity"}, function(Option)
+    getgenv().ObsidianSpeed.Mode = Option
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("模式切换", "当前模式: " .. Option, 1.5)
+    end
+end)
+
+-- 平滑度开关
+MainTab:Toggle("平滑过渡", true, function(Value)
+    getgenv().ObsidianSpeed.Smoothing = Value
+end)
+
+-- 键盘输入标签页
+local InputTab = Window:Tab("键盘输入", "rbxassetid://10734974240")
+
+-- 当前速度显示
+local CurrentSpeedLabel = InputTab:Label("当前速度: 16 单位")
+
+-- 输入框
+InputTab:TextBox("输入速度值", "输入数字 (1-500)", function(Text)
+    local num = tonumber(Text)
+    if num then
+        num = math.clamp(num, 1, 500)
+        num = math.floor(num)
+        getgenv().ObsidianSpeed.Speed = num
+        CurrentSpeedLabel:Set("当前速度: " .. num .. " 单位")
+        
+        if getgenv().ObsidianSpeed.ShowNotifications then
+            Library:Notify("速度已设置", "当前速度: " .. num, 1.5)
+        end
+    else
+        Library:Notify("输入错误", "请输入有效数字", 1.5)
+    end
+end)
+
+-- 预设标签页
+local PresetTab = Window:Tab("预设速度", "rbxassetid://10734974240")
+
+-- 预设按钮
+PresetTab:Button("🐢 龟速 (5)", function()
+    getgenv().ObsidianSpeed.Speed = 5
+    CurrentSpeedLabel:Set("当前速度: 5 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度设置", "当前速度: 5 (龟速)", 1.5)
+    end
+end)
+
+PresetTab:Button("🚶 走路 (16)", function()
+    getgenv().ObsidianSpeed.Speed = 16
+    CurrentSpeedLabel:Set("当前速度: 16 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度设置", "当前速度: 16 (正常)", 1.5)
+    end
+end)
+
+PresetTab:Button("🏃 小跑 (30)", function()
+    getgenv().ObsidianSpeed.Speed = 30
+    CurrentSpeedLabel:Set("当前速度: 30 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度设置", "当前速度: 30 (小跑)", 1.5)
+    end
+end)
+
+PresetTab:Button("🚗 汽车 (50)", function()
+    getgenv().ObsidianSpeed.Speed = 50
+    CurrentSpeedLabel:Set("当前速度: 50 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度设置", "当前速度: 50 (汽车)", 1.5)
+    end
+end)
+
+PresetTab:Button("✈️ 飞机 (100)", function()
+    getgenv().ObsidianSpeed.Speed = 100
+    CurrentSpeedLabel:Set("当前速度: 100 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度设置", "当前速度: 100 (飞机)", 1.5)
+    end
+end)
+
+PresetTab:Button("🚀 火箭 (200)", function()
+    getgenv().ObsidianSpeed.Speed = 200
+    CurrentSpeedLabel:Set("当前速度: 200 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度设置", "当前速度: 200 (火箭)", 1.5)
+    end
+end)
+
+-- 精细调节标签页
+local FineTab = Window:Tab("精细调节", "rbxassetid://10734974240")
+
+-- 加减按钮
+FineTab:Button("➖➖ 减速 (-10)", function()
+    local newSpeed = math.max(1, getgenv().ObsidianSpeed.Speed - 10)
+    getgenv().ObsidianSpeed.Speed = newSpeed
+    CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度调整", "当前速度: " .. newSpeed, 1)
+    end
+end)
+
+FineTab:Button("➖ 减速 (-5)", function()
+    local newSpeed = math.max(1, getgenv().ObsidianSpeed.Speed - 5)
+    getgenv().ObsidianSpeed.Speed = newSpeed
+    CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度调整", "当前速度: " .. newSpeed, 1)
+    end
+end)
+
+FineTab:Button("➖ 微减速 (-1)", function()
+    local newSpeed = math.max(1, getgenv().ObsidianSpeed.Speed - 1)
+    getgenv().ObsidianSpeed.Speed = newSpeed
+    CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度调整", "当前速度: " .. newSpeed, 1)
+    end
+end)
+
+FineTab:Button("➕ 微加速 (+1)", function()
+    local newSpeed = math.min(500, getgenv().ObsidianSpeed.Speed + 1)
+    getgenv().ObsidianSpeed.Speed = newSpeed
+    CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度调整", "当前速度: " .. newSpeed, 1)
+    end
+end)
+
+FineTab:Button("➕➕ 加速 (+5)", function()
+    local newSpeed = math.min(500, getgenv().ObsidianSpeed.Speed + 5)
+    getgenv().ObsidianSpeed.Speed = newSpeed
+    CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度调整", "当前速度: " .. newSpeed, 1)
+    end
+end)
+
+FineTab:Button("➕➕➕ 加速 (+10)", function()
+    local newSpeed = math.min(500, getgenv().ObsidianSpeed.Speed + 10)
+    getgenv().ObsidianSpeed.Speed = newSpeed
+    CurrentSpeedLabel:Set("当前速度: " .. newSpeed .. " 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("速度调整", "当前速度: " .. newSpeed, 1)
+    end
+end)
+
+-- 设置标签页
+local SettingsTab = Window:Tab("设置", "rbxassetid://10734974240")
+
+-- 通知开关
+SettingsTab:Toggle("显示通知", true, function(Value)
+    getgenv().ObsidianSpeed.ShowNotifications = Value
+end)
+
+-- 重置按钮
+SettingsTab:Button("重置为默认", function()
+    getgenv().ObsidianSpeed.Speed = 16
+    getgenv().ObsidianSpeed.Mode = "Smooth"
+    getgenv().ObsidianSpeed.Smoothing = true
+    CurrentSpeedLabel:Set("当前速度: 16 单位")
+    if getgenv().ObsidianSpeed.ShowNotifications then
+        Library:Notify("设置重置", "已恢复默认值", 1.5)
+    end
+end)
+
+-- 关闭UI按钮
+SettingsTab:Button("关闭界面", function()
+    Window:Destroy()
+end)
+
+-- 信息标签页
+local InfoTab = Window:Tab("信息", "rbxassetid://10734974240")
+
+InfoTab:Label("🔮 Obsidian UI 速度控制系统")
+InfoTab:Label("版本: 2.0.0")
+InfoTab:Label("作者: Injector Script")
+InfoTab:Label("")
+InfoTab:Label("📱 支持手机和PC")
+InfoTab:Label("🎮 5种移动模式可选")
+InfoTab:Label("⚙️ 可调节速度1-500")
+InfoTab:Label("⌨️ 支持键盘直接输入")
+
+-- 状态显示
+local StatusLabel = InfoTab:Label("状态: 等待更新...")
+
+-- 更新状态显示
+spawn(function()
+    while wait(1) do
+        if getgenv().ObsidianSpeed.Enabled then
+            StatusLabel:Set("状态: ✅ 运行中\n速度: " .. getgenv().ObsidianSpeed.Speed .. "\n模式: " .. getgenv().ObsidianSpeed.Mode)
+        else
+            StatusLabel:Set("状态: ❌ 已关闭\n速度: --\n模式: --")
+        end
+    end
+end)
+
+-- ========== 移速效果主循环 ==========
+local player = game:GetService("Players").LocalPlayer
+local runService = game:GetService("RunService")
+local userInputService = game:GetService("UserInputService")
+local currentSpeed = 0
+
+local function setupSpeedEffect()
+    runService.RenderStepped:Connect(function()
+        if not getgenv().ObsidianSpeed.Enabled then return end
+        
+        local character = player.Character
+        if not character then return end
+        
+        local humanoid = character:FindFirstChild("Humanoid")
+        if not humanoid or humanoid.Health <= 0 then return end
+        
+        local rootPart = character:FindFirstChild("HumanoidRootPart")
+        if not rootPart then return end
+        
+        -- 获取移动方向
+        local moveDir = humanoid.MoveDirection
+        
+        if moveDir.Magnitude > 0.1 then
+            local targetSpeed = getgenv().ObsidianSpeed.Speed
+            local mode = getgenv().ObsidianSpeed.Mode
+            
+            -- 根据模式计算每帧移动距离
+            local frameMove = 0
+            
+            if mode == "Smooth" then
+                frameMove = math.min(targetSpeed / 30, 3)
+            elseif mode == "Balanced" then
+                frameMove = math.min(targetSpeed / 20, 5)
+            elseif mode == "Fast" then
+                frameMove = math.min(targetSpeed / 10, 10)
+            elseif mode == "Teleport" then
+                frameMove = targetSpeed / 8
+            elseif mode == "BodyVelocity" then
+                -- 物理移动模式
+                local bv = rootPart:FindFirstChild("ObsidianSpeedBV")
+                if not bv then
+                    bv = Instance.new("BodyVelocity")
+                    bv.Name = "ObsidianSpeedBV"
+                    bv.MaxForce = Vector3.new(4000, 0, 4000)
+                    bv.Parent = rootPart
+                end
+                bv.Velocity = moveDir * targetSpeed * 2
+                return
+            end
+            
+            -- 平滑过渡
+            if getgenv().ObsidianSpeed.Smoothing then
+                currentSpeed = currentSpeed + (targetSpeed - currentSpeed) * 0.1
+                frameMove = currentSpeed / 30
+            end
+            
+            -- 应用移动
+            local moveAmount = moveDir * frameMove
+            rootPart.CFrame = rootPart.CFrame + moveAmount
+        else
+            -- 移除物理效果
+            if rootPart then
+                local bv = rootPart:FindFirstChild("ObsidianSpeedBV")
+                if bv then bv:Destroy() end
+            end
+            currentSpeed = 0
+        end
+    end)
+end
+
+-- 启动移速效果
+setupSpeedEffect()
+
+-- 键盘快捷键
+userInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    -- F8 开关效果
+    if input.KeyCode == Enum.KeyCode.F8 then
+        getgenv().ObsidianSpeed.Enabled = not getgenv().ObsidianSpeed.Enabled
+        if getgenv().ObsidianSpeed.ShowNotifications then
+            Library:Notify("速度控制", getgenv().ObsidianSpeed.Enabled and "✅ 已开启" or "❌ 已关闭", 1.5)
+        end
+    end
+    
+    -- 数字键快速设置
+    if input.KeyCode == Enum.KeyCode.One then
+        getgenv().ObsidianSpeed.Speed = 16
+        CurrentSpeedLabel:Set("当前速度: 16 单位")
+    elseif input.KeyCode == Enum.KeyCode.Two then
+        getgenv().ObsidianSpeed.Speed = 30
+        CurrentSpeedLabel:Set("当前速度: 30 单位")
+    elseif input.KeyCode == Enum.KeyCode.Three then
+        getgenv().ObsidianSpeed.Speed = 50
+        CurrentSpeedLabel:Set("当前速度: 50 单位")
+    elseif input.KeyCode == Enum.KeyCode.Four then
+        getgenv().ObsidianSpeed.Speed = 100
+        CurrentSpeedLabel:Set("当前速度: 100 单位")
+    end
+end)
+
+-- 初始化完成通知
+Library:Notify("Obsidian 速度系统", "按 F8 开启/关闭效果\n输入数字直接设置速度", 5)
+
+print("✅ Obsidian UI 速度脚本已加载")
+print("📱 按 F8 开启/关闭效果")
+print("⌨️ 在'键盘输入'标签页直接输入数字")
