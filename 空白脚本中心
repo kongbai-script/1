@@ -58,9 +58,12 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- ================== 主控制标签页 ==================
+-- 创建标签页
 local MainTab = Window:CreateTab("主控制", 10734974240)
 local MainSection = MainTab:CreateSection("速度控制")
+
+-- 当前速度显示标签
+local CurrentSpeedLabel = MainTab:CreateLabel("当前速度: 16 单位")
 
 -- 开关
 local Toggle = MainTab:CreateToggle({
@@ -73,8 +76,7 @@ local Toggle = MainTab:CreateToggle({
             Rayfield:Notify({
                 Title = "速度控制",
                 Content = Value and "✅ 已开启" or "❌ 已关闭",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -106,8 +108,7 @@ local ModeDropdown = MainTab:CreateDropdown({
             Rayfield:Notify({
                 Title = "模式切换",
                 Content = "当前模式: " .. Option,
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -123,11 +124,8 @@ local SmoothingToggle = MainTab:CreateToggle({
     end
 })
 
--- ================== 键盘输入功能 (整合到主控制) ==================
+-- 键盘输入功能
 local InputSection = MainTab:CreateSection("键盘直接输入")
-
--- 当前速度显示
-local CurrentSpeedLabel = MainTab:CreateLabel("当前速度: 16 单位")
 
 -- 输入框
 local InputBox = MainTab:CreateInput({
@@ -137,7 +135,7 @@ local InputBox = MainTab:CreateInput({
     Callback = function(Text)
         local num = tonumber(Text)
         if num then
-            num = math.clamp(num, 1, 500)
+            num = math.max(1, math.min(500, num))
             num = math.floor(num)
             getgenv().RayfieldSpeed.Speed = num
             SpeedSlider:Set(num)
@@ -147,22 +145,20 @@ local InputBox = MainTab:CreateInput({
                 Rayfield:Notify({
                     Title = "速度已设置",
                     Content = "当前速度: " .. num,
-                    Duration = 1.5,
-                    Image = 10734974240
+                    Duration = 1.5
                 })
             end
         else
             Rayfield:Notify({
                 Title = "输入错误",
                 Content = "请输入有效数字",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
 })
 
--- ================== 无限跳标签页 ==================
+-- 无限跳标签页
 local JumpTab = Window:CreateTab("无限跳跃", 10734974240)
 local JumpSection = JumpTab:CreateSection("跳跃控制")
 
@@ -177,8 +173,7 @@ local InfiniteJumpToggle = JumpTab:CreateToggle({
             Rayfield:Notify({
                 Title = "无限跳跃",
                 Content = Value and "✅ 无限跳已开启" or "❌ 无限跳已关闭",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -211,7 +206,6 @@ local JumpPowerSlider = JumpTab:CreateSlider({
     Flag = "JumpPowerSlider",
     Callback = function(Value)
         getgenv().RayfieldSpeed.JumpPower = Value
-        -- 实时应用跳跃高度
         local player = game:GetService("Players").LocalPlayer
         if player and player.Character then
             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -222,7 +216,7 @@ local JumpPowerSlider = JumpTab:CreateSlider({
     end
 })
 
--- 跳跃倍率滑块（用于超级跳跃模式）
+-- 跳跃倍率滑块
 local JumpMultiplierSlider = JumpTab:CreateSlider({
     Name = "跳跃倍率",
     Range = {1, 10},
@@ -252,14 +246,13 @@ JumpTab:CreateButton({
             Rayfield:Notify({
                 Title = "跳跃重置",
                 Content = "跳跃高度已重置为50",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
 })
 
--- ================== 🧵 缝合功能标签页 ==================
+-- 缝合功能标签页
 local StitchTab = Window:CreateTab("🧵 缝合功能", 10734974240)
 local StitchSection = StitchTab:CreateSection("常用脚本加载")
 
@@ -272,7 +265,6 @@ StitchTab:CreateButton({
         end)
         
         if success then
-            -- 记录已加载的脚本
             table.insert(getgenv().RayfieldSpeed.LoadedScripts, {
                 Name = "Infinite Yield",
                 Time = os.date("%H:%M:%S")
@@ -281,15 +273,13 @@ StitchTab:CreateButton({
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "✅ Infinite Yield 已加载",
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         else
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "❌ 加载失败: " .. tostring(errorMsg),
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         end
     end
@@ -304,7 +294,6 @@ StitchTab:CreateButton({
         end)
         
         if success then
-            -- 记录已加载的脚本
             table.insert(getgenv().RayfieldSpeed.LoadedScripts, {
                 Name = "战争大亨无限子弹",
                 Time = os.date("%H:%M:%S")
@@ -313,30 +302,19 @@ StitchTab:CreateButton({
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "✅ 战争大亨无限子弹已加载",
-                Duration = 3,
-                Image = 10734974240
-            })
-            
-            -- 额外提示
-            wait(1)
-            Rayfield:Notify({
-                Title = "战争大亨",
-                Content = "现在你拥有无限子弹了！",
-                Duration = 2,
-                Image = 10734974240
+                Duration = 3
             })
         else
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "❌ 加载失败: " .. tostring(errorMsg),
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         end
     end
 })
 
--- 秒互动脚本按钮（新增）
+-- 秒互动脚本按钮
 StitchTab:CreateButton({
     Name = "⚡ 秒互动（快速点击）",
     Callback = function()
@@ -353,21 +331,19 @@ StitchTab:CreateButton({
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "✅ 秒互动脚本已加载",
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         else
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "❌ 加载失败: " .. tostring(errorMsg),
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         end
     end
 })
 
--- 玩家控制脚本按钮（新增）
+-- 玩家控制脚本按钮
 StitchTab:CreateButton({
     Name = "🎮 玩家控制",
     Callback = function()
@@ -384,15 +360,13 @@ StitchTab:CreateButton({
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "✅ 玩家控制脚本已加载",
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         else
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "❌ 加载失败: " .. tostring(errorMsg),
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         end
     end
@@ -415,15 +389,13 @@ StitchTab:CreateButton({
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "✅ Dark Dex 已加载",
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         else
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "❌ 加载失败",
-                Duration = 3,
-                Image = 10734974240
+                Duration = 3
             })
         end
     end
@@ -437,7 +409,6 @@ local CustomScriptInput = StitchTab:CreateInput({
     PlaceholderText = "https://raw.githubusercontent.com/...",
     RemoveTextAfterFocusLost = true,
     Callback = function(Text)
-        -- 不立即执行，只是存储
         getgenv().RayfieldSpeed.CustomScriptURL = Text
     end
 })
@@ -461,23 +432,20 @@ StitchTab:CreateButton({
                 Rayfield:Notify({
                     Title = "缝合功能",
                     Content = "✅ 自定义脚本已加载",
-                    Duration = 3,
-                    Image = 10734974240
+                    Duration = 3
                 })
             else
                 Rayfield:Notify({
                     Title = "缝合功能",
                     Content = "❌ 加载失败: " .. tostring(errorMsg),
-                    Duration = 3,
-                    Image = 10734974240
+                    Duration = 3
                 })
             end
         else
             Rayfield:Notify({
                 Title = "缝合功能",
                 Content = "❌ 请输入有效的URL",
-                Duration = 2,
-                Image = 10734974240
+                Duration = 2
             })
         end
     end
@@ -518,13 +486,12 @@ StitchTab:CreateButton({
         Rayfield:Notify({
             Title = "缝合功能",
             Content = "已清空加载记录",
-            Duration = 1.5,
-            Image = 10734974240
+            Duration = 1.5
         })
     end
 })
 
--- ================== 预设速度标签页 ==================
+-- 预设速度标签页
 local PresetTab = Window:CreateTab("预设速度", 10734974240)
 local PresetSection = PresetTab:CreateSection("快速设置")
 
@@ -539,8 +506,7 @@ PresetTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度设置",
                 Content = "当前速度: 5 (龟速)",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -556,8 +522,7 @@ PresetTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度设置",
                 Content = "当前速度: 16 (正常)",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -573,8 +538,7 @@ PresetTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度设置",
                 Content = "当前速度: 30 (小跑)",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -590,8 +554,7 @@ PresetTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度设置",
                 Content = "当前速度: 50 (汽车)",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -607,8 +570,7 @@ PresetTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度设置",
                 Content = "当前速度: 100 (飞机)",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -624,14 +586,13 @@ PresetTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度设置",
                 Content = "当前速度: 200 (火箭)",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
 })
 
--- ================== 精细调节标签页 ==================
+-- 精细调节标签页
 local FineTab = Window:CreateTab("精细调节", 10734974240)
 local FineSection = FineTab:CreateSection("步进调节 (1单位)")
 
@@ -647,8 +608,7 @@ FineTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度调整",
                 Content = "当前速度: " .. newSpeed,
-                Duration = 1,
-                Image = 10734974240
+                Duration = 1
             })
         end
     end
@@ -665,8 +625,7 @@ FineTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度调整",
                 Content = "当前速度: " .. newSpeed,
-                Duration = 1,
-                Image = 10734974240
+                Duration = 1
             })
         end
     end
@@ -683,8 +642,7 @@ FineTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度调整",
                 Content = "当前速度: " .. newSpeed,
-                Duration = 1,
-                Image = 10734974240
+                Duration = 1
             })
         end
     end
@@ -701,8 +659,7 @@ FineTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度调整",
                 Content = "当前速度: " .. newSpeed,
-                Duration = 1,
-                Image = 10734974240
+                Duration = 1
             })
         end
     end
@@ -719,8 +676,7 @@ FineTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度调整",
                 Content = "当前速度: " .. newSpeed,
-                Duration = 1,
-                Image = 10734974240
+                Duration = 1
             })
         end
     end
@@ -737,14 +693,13 @@ FineTab:CreateButton({
             Rayfield:Notify({
                 Title = "速度调整",
                 Content = "当前速度: " .. newSpeed,
-                Duration = 1,
-                Image = 10734974240
+                Duration = 1
             })
         end
     end
 })
 
--- ================== 设置标签页 ==================
+-- 设置标签页
 local SettingsTab = Window:CreateTab("设置", 10734974240)
 local SettingsSection = SettingsTab:CreateSection("其他设置")
 
@@ -783,8 +738,7 @@ SettingsTab:CreateButton({
             Rayfield:Notify({
                 Title = "设置重置",
                 Content = "已恢复默认值",
-                Duration = 1.5,
-                Image = 10734974240
+                Duration = 1.5
             })
         end
     end
@@ -798,7 +752,7 @@ SettingsTab:CreateButton({
     end
 })
 
--- ================== 信息标签页 ==================
+-- 信息标签页
 local InfoTab = Window:CreateTab("信息", 10734974240)
 local InfoSection = InfoTab:CreateSection("关于")
 
@@ -832,7 +786,7 @@ spawn(function()
     end
 end)
 
--- ================== 无限跳核心逻辑 ==================
+-- 无限跳核心逻辑
 local player = game:GetService("Players").LocalPlayer
 local userInputService = game:GetService("UserInputService")
 local runService = game:GetService("RunService")
@@ -947,7 +901,7 @@ if player.Character then
 end
 player.CharacterAdded:Connect(onCharacterAdded)
 
--- ================== 移速效果主循环 ==================
+-- 移速效果主循环
 local currentSpeed = 0
 
 local function setupSpeedEffect()
@@ -1017,5 +971,5 @@ end
 -- 启动移速效果
 setupSpeedEffect()
 
--- ================== 完全移除了所有快捷键 ==================
--- 没有F8、F
+-- 完全移除了所有快捷键
+-- 没有F8、F9等快捷键，全部通过按钮操作
