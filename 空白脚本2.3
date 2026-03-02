@@ -82,6 +82,23 @@ StitchGroup:AddButton({
     end
 })
 
+-- 添加阿尔宙斯自瞄按钮
+StitchGroup:AddButton({
+    Text = '阿尔宙斯自瞄',
+    Func = function()
+        local success, result = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20Aimbot.lua"))()
+        end)
+        
+        if success then
+            Library:Notify('阿尔宙斯自瞄已加载', 2)
+            if PlayingSound then Sound() end
+        else
+            Library:Notify('阿尔宙斯自瞄加载失败', 2)
+        end
+    end
+})
+
 local ControlGroup = MainTab:AddLeftGroupbox('速度控制')
 
 ControlGroup:AddLabel('当前速度', true)
