@@ -584,4 +584,5 @@ Sound()
 
 Library:Notify('空白脚本中心 v2.8 已加载', 3)
 Library:Notify('作者: 空白 | QQ群: 823938617', 3)
+
 Library:Notify('方法: CFrame传送 (不修改属性)', 3)
