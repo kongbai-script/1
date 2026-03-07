@@ -1,0 +1,511 @@
+-- 车辆飞行控制UI v1.0
+-- 独立脚本，不依赖Infinite Yield
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local mouse = LocalPlayer:GetMouse()
+
+-- 创建主GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "VehicleFlyGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- 创建主框架
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 250, 0, 350)
+mainFrame.Position = UDim2.new(0, 50, 0.5, -175)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+-- 添加圆角
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+-- 标题栏
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 35)
+titleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = titleBar
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -40, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "🚗 车辆飞行控制"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = titleBar
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "CloseBtn"
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0.5, -12.5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+closeBtn.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 4)
+closeCorner.Parent = closeBtn
+
+-- 状态变量
+local FLYING = false
+local vehicleflyspeed = 20
+local flyKeyDown = nil
+local flyKeyUp = nil
+
+-- 创建内容框架
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, -20, 1, -55)
+contentFrame.Position = UDim2.new(0, 10, 0, 45)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
+
+-- 状态卡片
+local statusCard = Instance.new("Frame")
+statusCard.Name = "StatusCard"
+statusCard.Size = UDim2.new(1, 0, 0, 60)
+statusCard.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+statusCard.Parent = contentFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 6)
+statusCorner.Parent = statusCard
+
+local statusIcon = Instance.new("TextLabel")
+statusIcon.Name = "StatusIcon"
+statusIcon.Size = UDim2.new(0, 30, 1, 0)
+statusIcon.Position = UDim2.new(0, 10, 0, 0)
+statusIcon.BackgroundTransparency = 1
+statusIcon.Text = "⏹️"
+statusIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusIcon.Font = Enum.Font.GothamBold
+statusIcon.TextSize = 24
+statusIcon.Parent = statusCard
+
+local statusText = Instance.new("TextLabel")
+statusText.Name = "StatusText"
+statusText.Size = UDim2.new(1, -100, 0.5, 0)
+statusText.Position = UDim2.new(0, 50, 0, 5)
+statusText.BackgroundTransparency = 1
+statusText.Text = "飞行状态"
+statusText.TextColor3 = Color3.fromRGB(180, 180, 180)
+statusText.Font = Enum.Font.Gotham
+statusText.TextSize = 12
+statusText.TextXAlignment = Enum.TextXAlignment.Left
+statusText.Parent = statusCard
+
+local statusValue = Instance.new("TextLabel")
+statusValue.Name = "StatusValue"
+statusValue.Size = UDim2.new(1, -100, 0.5, 0)
+statusValue.Position = UDim2.new(0, 50, 0.5, -5)
+statusValue.BackgroundTransparency = 1
+statusValue.Text = "已关闭"
+statusValue.TextColor3 = Color3.fromRGB(255, 100, 100)
+statusValue.Font = Enum.Font.GothamBold
+statusValue.TextSize = 16
+statusValue.TextXAlignment = Enum.TextXAlignment.Left
+statusValue.Parent = statusCard
+
+-- 速度控制卡片
+local speedCard = Instance.new("Frame")
+speedCard.Name = "SpeedCard"
+speedCard.Size = UDim2.new(1, 0, 0, 100)
+speedCard.Position = UDim2.new(0, 0, 0, 70)
+speedCard.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+speedCard.Parent = contentFrame
+
+local speedCorner = Instance.new("UICorner")
+speedCorner.CornerRadius = UDim.new(0, 6)
+speedCorner.Parent = speedCard
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Name = "SpeedLabel"
+speedLabel.Size = UDim2.new(1, -20, 0, 25)
+speedLabel.Position = UDim2.new(0, 10, 0, 10)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "⚡ 飞行速度"
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.TextSize = 14
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedCard
+
+local speedSlider = Instance.new("Frame")
+speedSlider.Name = "SpeedSlider"
+speedSlider.Size = UDim2.new(1, -20, 0, 30)
+speedSlider.Position = UDim2.new(0, 10, 0, 40)
+speedSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+speedSlider.Parent = speedCard
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(1, 0)
+sliderCorner.Parent = speedSlider
+
+local sliderFill = Instance.new("Frame")
+sliderFill.Name = "SliderFill"
+sliderFill.Size = UDim2.new(0.5, 0, 1, 0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+sliderFill.Parent = speedSlider
+
+local fillCorner = Instance.new("UICorner")
+fillCorner.CornerRadius = UDim.new(1, 0)
+fillCorner.Parent = sliderFill
+
+local speedValue = Instance.new("TextLabel")
+speedValue.Name = "SpeedValue"
+speedValue.Size = UDim2.new(0, 60, 0, 25)
+speedValue.Position = UDim2.new(1, -70, 0, 10)
+speedValue.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+speedValue.Text = "20"
+speedValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedValue.Font = Enum.Font.GothamBold
+speedValue.TextSize = 14
+speedValue.Parent = speedCard
+
+local valueCorner = Instance.new("UICorner")
+valueCorner.CornerRadius = UDim.new(0, 4)
+valueCorner.Parent = speedValue
+
+-- 控制按钮
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Name = "ToggleBtn"
+toggleBtn.Size = UDim2.new(1, 0, 0, 50)
+toggleBtn.Position = UDim2.new(0, 0, 0, 180)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+toggleBtn.Text = "🚀 启动飞行"
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 16
+toggleBtn.Parent = contentFrame
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 6)
+toggleCorner.Parent = toggleBtn
+
+local resetBtn = Instance.new("TextButton")
+resetBtn.Name = "ResetBtn"
+resetBtn.Size = UDim2.new(1, 0, 0, 40)
+resetBtn.Position = UDim2.new(0, 0, 0, 240)
+resetBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 105)
+resetBtn.Text = "🔄 重置速度 (20)"
+resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+resetBtn.Font = Enum.Font.GothamBold
+resetBtn.TextSize = 14
+resetBtn.Parent = contentFrame
+
+local resetCorner = Instance.new("UICorner")
+resetCorner.CornerRadius = UDim.new(0, 6)
+resetCorner.Parent = resetBtn
+
+-- 控制提示
+local tipsLabel = Instance.new("TextLabel")
+tipsLabel.Name = "TipsLabel"
+tipsLabel.Size = UDim2.new(1, 0, 0, 30)
+tipsLabel.Position = UDim2.new(0, 0, 1, -30)
+tipsLabel.BackgroundTransparency = 1
+tipsLabel.Text = "WASD:移动 | Q/E:上升/下降"
+tipsLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+tipsLabel.Font = Enum.Font.Gotham
+tipsLabel.TextSize = 12
+tipsLabel.Parent = contentFrame
+
+-- 核心飞行函数
+function getRoot(char)
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        return char:FindFirstChildOfClass("Humanoid").RootPart
+    end
+    return nil
+end
+
+function stopFly()
+    FLYING = false
+    if flyKeyDown then 
+        flyKeyDown:Disconnect()
+        flyKeyDown = nil
+    end
+    if flyKeyUp then 
+        flyKeyUp:Disconnect()
+        flyKeyUp = nil
+    end
+    
+    local char = LocalPlayer.Character
+    if char then
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.PlatformStand = false
+        end
+        
+        local root = getRoot(char)
+        if root then
+            for _, v in pairs(root:GetChildren()) do
+                if v:IsA("BodyVelocity") or v:IsA("BodyGyro") then
+                    v:Destroy()
+                end
+            end
+        end
+    end
+    
+    pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+    
+    -- 更新UI
+    statusIcon.Text = "⏹️"
+    statusValue.Text = "已关闭"
+    statusValue.TextColor3 = Color3.fromRGB(255, 100, 100)
+    toggleBtn.Text = "🚀 启动飞行"
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+end
+
+function startFly()
+    stopFly()
+    
+    local char = LocalPlayer.Character
+    if not char then return end
+    
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    
+    local root = getRoot(char)
+    if not root then return end
+    
+    FLYING = true
+    
+    local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+    local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+    local SPEED = 0
+    
+    -- 创建BodyGyro和BodyVelocity
+    local BG = Instance.new("BodyGyro")
+    local BV = Instance.new("BodyVelocity")
+    BG.P = 9e4
+    BG.Parent = root
+    BV.Parent = root
+    BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    BG.CFrame = root.CFrame
+    BV.Velocity = Vector3.new(0, 0, 0)
+    BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    
+    -- 键盘按下事件
+    flyKeyDown = UserInputService.InputBegan:Connect(function(input, processed)
+        if processed or not FLYING then return end
+        
+        if input.KeyCode == Enum.KeyCode.W then
+            CONTROL.F = vehicleflyspeed
+        elseif input.KeyCode == Enum.KeyCode.S then
+            CONTROL.B = -vehicleflyspeed
+        elseif input.KeyCode == Enum.KeyCode.A then
+            CONTROL.L = -vehicleflyspeed
+        elseif input.KeyCode == Enum.KeyCode.D then
+            CONTROL.R = vehicleflyspeed
+        elseif input.KeyCode == Enum.KeyCode.Q then
+            CONTROL.E = -vehicleflyspeed * 2
+        elseif input.KeyCode == Enum.KeyCode.E then
+            CONTROL.Q = vehicleflyspeed * 2
+        end
+    end)
+    
+    -- 键盘抬起事件
+    flyKeyUp = UserInputService.InputEnded:Connect(function(input, processed)
+        if processed or not FLYING then return end
+        
+        if input.KeyCode == Enum.KeyCode.W then
+            CONTROL.F = 0
+        elseif input.KeyCode == Enum.KeyCode.S then
+            CONTROL.B = 0
+        elseif input.KeyCode == Enum.KeyCode.A then
+            CONTROL.L = 0
+        elseif input.KeyCode == Enum.KeyCode.D then
+            CONTROL.R = 0
+        elseif input.KeyCode == Enum.KeyCode.Q then
+            CONTROL.E = 0
+        elseif input.KeyCode == Enum.KeyCode.E then
+            CONTROL.Q = 0
+        end
+    end)
+    
+    -- 飞行循环
+    task.spawn(function()
+        while FLYING do
+            task.wait()
+            local camera = workspace.CurrentCamera
+            
+            if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+                SPEED = 50
+            elseif SPEED ~= 0 then
+                SPEED = 0
+            end
+            
+            if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+                BV.Velocity = ((camera.CFrame.LookVector * (CONTROL.F + CONTROL.B)) + 
+                              ((camera.CFrame * CFrame.new(CONTROL.L + CONTROL.R, 
+                              (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - camera.CFrame.p)) * SPEED
+                lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+            elseif SPEED ~= 0 then
+                BV.Velocity = ((camera.CFrame.LookVector * (lCONTROL.F + lCONTROL.B)) + 
+                              ((camera.CFrame * CFrame.new(lCONTROL.L + lCONTROL.R, 
+                              (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - camera.CFrame.p)) * SPEED
+            else
+                BV.Velocity = Vector3.new(0, 0, 0)
+            end
+            
+            BG.CFrame = camera.CFrame
+        end
+        
+        -- 清理
+        BG:Destroy()
+        BV:Destroy()
+    end)
+    
+    -- 更新UI
+    statusIcon.Text = "✈️"
+    statusValue.Text = "飞行中"
+    statusValue.TextColor3 = Color3.fromRGB(100, 255, 100)
+    toggleBtn.Text = "⏹️ 关闭飞行"
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+end
+
+-- 拖拽功能
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
+
+titleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(
+            startPos.X.Scale, 
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale, 
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- 按钮事件
+closeBtn.MouseButton1Click:Connect(function()
+    stopFly()
+    screenGui:Destroy()
+end)
+
+toggleBtn.MouseButton1Click:Connect(function()
+    if FLYING then
+        stopFly()
+    else
+        -- 检查是否在车里
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChildOfClass("Humanoid") then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.SeatPart then
+                startFly()
+            else
+                -- 简单的通知提示
+                local notify = Instance.new("Frame")
+                notify.Size = UDim2.new(0, 200, 0, 50)
+                notify.Position = UDim2.new(0.5, -100, 0.5, -25)
+                notify.BackgroundColor3 = Color3.fromRGB(200, 100, 100)
+                notify.Parent = screenGui
+                
+                local notifyCorner = Instance.new("UICorner")
+                notifyCorner.CornerRadius = UDim.new(0, 8)
+                notifyCorner.Parent = notify
+                
+                local notifyText = Instance.new("TextLabel")
+                notifyText.Size = UDim2.new(1, -10, 1, -10)
+                notifyText.Position = UDim2.new(0, 5, 0, 5)
+                notifyText.BackgroundTransparency = 1
+                notifyText.Text = "请先进入一辆车！"
+                notifyText.TextColor3 = Color3.fromRGB(255, 255, 255)
+                notifyText.Font = Enum.Font.GothamBold
+                notifyText.TextSize = 14
+                notifyText.Parent = notify
+                
+                task.wait(2)
+                notify:Destroy()
+            end
+        end
+    end
+end)
+
+resetBtn.MouseButton1Click:Connect(function()
+    vehicleflyspeed = 20
+    speedValue.Text = tostring(vehicleflyspeed)
+    sliderFill.Size = UDim2.new(0.5, 0, 1, 0)
+end)
+
+-- 滑块拖动功能
+local draggingSlider = false
+speedSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingSlider = true
+    end
+end)
+
+speedSlider.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingSlider = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if draggingSlider and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local mousePos = input.Position
+        local sliderPos = speedSlider.AbsolutePosition
+        local sliderSize = speedSlider.AbsoluteSize
+        local relativeX = math.clamp(mousePos.X - sliderPos.X, 0, sliderSize.X)
+        local percent = relativeX / sliderSize.X
+        
+        -- 速度范围 1-50
+        vehicleflyspeed = math.floor(percent * 49) + 1
+        speedValue.Text = tostring(vehicleflyspeed)
+        sliderFill.Size = UDim2.new(percent, 0, 1, 0)
+    end
+end)
+
+-- 角色死亡时自动关闭飞行
+local function onCharacterAdded(char)
+    task.wait(1)
+    if FLYING then
+        stopFly()
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+-- 初始隐藏滑块（稍后显示）
+task.wait()
