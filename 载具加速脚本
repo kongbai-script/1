@@ -1,0 +1,179 @@
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "VehicleSpeedGUI"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.IgnoreGuiInset = true
+local AdLabel = Instance.new("TextLabel")
+AdLabel.Size = UDim2.new(1, 0, 0, 50)
+AdLabel.Position = UDim2.new(0, 0, 0.45, 0)
+AdLabel.BackgroundTransparency = 1
+AdLabel.Text = "Join RedIkidd team today!"
+AdLabel.TextColor3 = Color3.new(1, 0.8, 0)
+AdLabel.TextSize = 32
+AdLabel.Font = Enum.Font.GothamBlack
+AdLabel.TextStrokeTransparency = 0.5
+AdLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+AdLabel.Parent = ScreenGui
+task.wait(5)
+AdLabel:Destroy()
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 280, 0, 220)
+MainFrame.Position = UDim2.new(0.05, 0, 0.4, 0)
+MainFrame.BackgroundColor3 = Color3.new(0.08, 0.08, 0.12)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = MainFrame
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Thickness = 2
+UIStroke.Color = Color3.new(0.2, 0.4, 1)
+UIStroke.Parent = MainFrame
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.BackgroundColor3 = Color3.new(0.15, 0.15, 0.25)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = TitleBar
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -20, 1, 0)
+TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "团长载具加速脚本"
+TitleLabel.TextColor3 = Color3.new(0.2, 0.6, 1)
+TitleLabel.TextSize = 16
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TitleBar
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 250, 0, 40)
+ToggleButton.Position = UDim2.new(0, 15, 0, 45)
+ToggleButton.BackgroundColor3 = Color3.new(0.18, 0.18, 0.28)
+ToggleButton.Text = "加速：关闭"
+ToggleButton.TextColor3 = Color3.new(0.8, 0.2, 0.3)
+ToggleButton.TextSize = 15
+ToggleButton.Font = Enum.Font.GothamSemibold
+ToggleButton.Parent = MainFrame
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 8)
+ToggleCorner.Parent = ToggleButton
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0, 250, 0, 30)
+SpeedLabel.Position = UDim2.new(0, 15, 0, 95)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "速度：50"
+SpeedLabel.TextColor3 = Color3.new(1, 1, 1)
+SpeedLabel.TextSize = 14
+SpeedLabel.Font = Enum.Font.Gotham
+SpeedLabel.Parent = MainFrame
+local DecreaseButton = Instance.new("TextButton")
+DecreaseButton.Size = UDim2.new(0, 120, 0, 35)
+DecreaseButton.Position = UDim2.new(0, 15, 0, 130)
+DecreaseButton.BackgroundColor3 = Color3.new(0.22, 0.22, 0.32)
+DecreaseButton.Text = "- 25"
+DecreaseButton.TextColor3 = Color3.new(1, 0.3, 0.3)
+DecreaseButton.TextSize = 15
+DecreaseButton.Font = Enum.Font.GothamSemibold
+DecreaseButton.Parent = MainFrame
+local DecreaseCorner = Instance.new("UICorner")
+DecreaseCorner.CornerRadius = UDim.new(0, 8)
+DecreaseCorner.Parent = DecreaseButton
+local IncreaseButton = Instance.new("TextButton")
+IncreaseButton.Size = UDim2.new(0, 120, 0, 35)
+IncreaseButton.Position = UDim2.new(0, 145, 0, 130)
+IncreaseButton.BackgroundColor3 = Color3.new(0.22, 0.22, 0.32)
+IncreaseButton.Text = "+ 25"
+IncreaseButton.TextColor3 = Color3.new(0.3, 1, 0.5)
+IncreaseButton.TextSize = 15
+IncreaseButton.Font = Enum.Font.GothamSemibold
+IncreaseButton.Parent = MainFrame
+local IncreaseCorner = Instance.new("UICorner")
+IncreaseCorner.CornerRadius = UDim.new(0, 8)
+IncreaseCorner.Parent = IncreaseButton
+local CollapseButton = Instance.new("TextButton")
+CollapseButton.Size = UDim2.new(0, 250, 0, 35)
+CollapseButton.Position = UDim2.new(0, 15, 0, 175)
+CollapseButton.BackgroundColor3 = Color3.new(0.25, 0.25, 0.35)
+CollapseButton.Text = "收起GUI"
+CollapseButton.TextColor3 = Color3.new(1, 1, 1)
+CollapseButton.TextSize = 14
+CollapseButton.Font = Enum.Font.GothamSemibold
+CollapseButton.Parent = MainFrame
+local CollapseCorner = Instance.new("UICorner")
+CollapseCorner.CornerRadius = UDim.new(0, 8)
+CollapseCorner.Parent = CollapseButton
+local isEnabled = false
+local speedMultiplier = 50
+local isCollapsed = false
+local currentSpeed = 0
+local accelerationRate = 1.2
+ToggleButton.MouseButton1Click:Connect(function()
+    isEnabled = not isEnabled
+    ToggleButton.Text = isEnabled and "加速：开启" or "加速：关闭"
+    ToggleButton.TextColor3 = isEnabled and Color3.new(0.2, 0.8, 0.4) or Color3.new(0.8, 0.2, 0.3)
+end)
+IncreaseButton.MouseButton1Click:Connect(function()
+    speedMultiplier += 25
+    SpeedLabel.Text = "速度：" .. speedMultiplier
+end)
+DecreaseButton.MouseButton1Click:Connect(function()
+    if speedMultiplier > 25 then
+        speedMultiplier -= 25
+        SpeedLabel.Text = "速度：" .. speedMultiplier
+    end
+end)
+CollapseButton.MouseButton1Click:Connect(function()
+    isCollapsed = not isCollapsed
+    if isCollapsed then
+        MainFrame.Size = UDim2.new(0, 280, 0, 35)
+        SpeedLabel.Visible = false
+        DecreaseButton.Visible = false
+        IncreaseButton.Visible = false
+        ToggleButton.Visible = false
+        CollapseButton.Position = UDim2.new(0, 15, 0, 0)
+        CollapseButton.Size = UDim2.new(0, 250, 0, 35)
+        CollapseButton.Text = "展开GUI"
+    else
+        MainFrame.Size = UDim2.new(0, 280, 0, 220)
+        SpeedLabel.Visible = true
+        DecreaseButton.Visible = true
+        IncreaseButton.Visible = true
+        ToggleButton.Visible = true
+        CollapseButton.Position = UDim2.new(0, 15, 0, 175)
+        CollapseButton.Size = UDim2.new(0, 250, 0, 35)
+        CollapseButton.Text = "收起GUI"
+    end
+end)
+RunService.Heartbeat:Connect(function(dt)
+    local char = LocalPlayer.Character
+    if not char then return end
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid or not humanoid.SeatPart then
+        currentSpeed = 0
+        return
+    end
+    local seat = humanoid.SeatPart
+    if seat:IsA("VehicleSeat") then
+        if isEnabled then
+            local step = accelerationRate * dt * 60
+            currentSpeed = math.clamp(currentSpeed + step, 0, speedMultiplier)
+            seat.Velocity = seat.CFrame.LookVector * currentSpeed
+            seat.Throttle = 1
+        else
+            seat.Throttle = 0
+        end
+    end
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "脚本已加载",
+    Text = "默认关闭加速，手动开启",
+    Duration = 2
+})
