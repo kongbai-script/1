@@ -1,0 +1,812 @@
+-- ts file was generated at discord.gg/25ms
+
+local _5 = loadstring(game:HttpGet('https://github.com/Footagesus/WindUI/releases/latest/download/main.lua'))()
+local _LocalPlayer10 = game:GetService('Players').LocalPlayer
+
+-- 直接加载主界面，跳过密钥验证
+local _call210 = _5:CreateWindow({
+    Folder = 'MoonPixel',
+    Resizable = false,
+    Title = 'Moon Pixel',
+    Transparent = true,
+    Theme = 'Dark',
+    Author = 'RC2 Ultimate',
+    Icon = 'pickaxe',
+    Size = UDim2.fromOffset(580, 460),
+})
+
+local _call214 = game:GetService('ReplicatedStorage')
+local _call216 = game:GetService('RunService')
+local _call218 = game:GetService('UserInputService')
+
+game:GetService('TweenService')
+game:GetService('Debris')
+
+local _LocalPlayer223 = game:GetService('Players').LocalPlayer
+local _call225 = _call214:WaitForChild('Events')
+
+_call225:WaitForChild('GrabHandler')
+_call225:WaitForChild('Tools'):WaitForChild('Charge')
+_call225:WaitForChild('Tools'):WaitForChild('Attack')
+_call225:WaitForChild('Fish', 3):WaitForChild('ReelSessionHit', 3)
+
+task.spawn(function(_242)
+    task.wait(2)
+    Vector3.new(-7122.19, -716.81, -2542.39)
+    workspace:FindFirstChild('MoonPixelPlatform')
+end)
+
+_G.RC2_Speed = 16
+_G.RC2_Jump = 50
+
+-- 移除无限循环错误
+-- 保留必要的坐标和颜色定义
+Vector3.new(921.27, 29.87, -702.75)
+Vector3.new(1355.33, 30.13, -771.28)
+Vector3.new(1250.97, 29.93, -746.66)
+Vector3.new(1148.71, 101.38, 553.91)
+Vector3.new(1058, 32, -915)
+Vector3.new(652.27, 24.62, -504.98)
+Vector3.new(1834, 3, -1364)
+Vector3.new(-533, 94, -163)
+Vector3.new(-1080, -52, 1265)
+Vector3.new(-42, 219, 2254)
+Vector3.new(1408, 126, 3304)
+Vector3.new(2277, 2, 1705)
+Vector3.new(1043, 263, 3913)
+Vector3.new(283.55, -119.22, 3408.11)
+Vector3.new(360, -411, 764)
+Vector3.new(56, -542, 2413)
+Vector3.new(-509.2, -491.4, 1306.39)
+Vector3.new(-582, -531, 1026)
+Vector3.new(-1853.14, -649.13, 2268.78)
+Vector3.new(-6242, 124, 4838)
+Vector3.new(-5722, -192, 5497)
+Vector3.new(-3771.17, 13.21, -798.75)
+Vector3.new(-5603, 19, -1763)
+Vector3.new(-5653, 354, -3199)
+Vector3.new(-7210.8, 755.1, -2894.52)
+Vector3.new(-5146, 59, -2858)
+Vector3.new(-4461.2, -195.77, -2083.83)
+Vector3.new(-5572, -101, -1495)
+Vector3.new(-6604, -593, 836)
+Vector3.new(-7454.1, -573.81, -2905.71)
+Vector3.new(-7127.1, -711.81, -2539.71)
+Vector3.new(-7881.55, 177.22, -3320.11)
+Vector3.new(-7588, -519, -3347)
+Vector3.new(-2313, 70, 5351)
+Vector3.new(-5532, 3, 3900)
+Vector3.new(852, 205, 167)
+Vector3.new(-1228, 152, -645)
+Vector3.new(29, 128, 1869)
+Vector3.new(0, 10, 0)
+Vector3.new(-5294, -172, 5546)
+Vector3.new(-7346, -638, 976)
+Vector3.new(935, 3, 2057)
+Vector3.new(-590, 100, 1836)
+Vector3.new(6618, 7, 3716)
+Vector3.new(7273, -590, -2755)
+Vector3.new(1838, 6, -1319)
+Vector3.new(550, 274, 1163)
+Vector3.new(-91, 163, 514)
+Vector3.new(-823, 71, 1353)
+Vector3.new(-313, 225, 1608)
+Vector3.new(-302, 255, 1584)
+Vector3.new(0, 10, 0)
+Vector3.new(-533, 94, -163)
+Vector3.new(-1080, -52, 1265)
+Vector3.new(-42, 219, 2254)
+Vector3.new(1408, 126, 3304)
+Vector3.new(-6242, 124, 4838)
+Vector3.new(-5722, -192, 5497)
+Vector3.new(-7454, -574, -2906)
+Vector3.new(-6604, -593, 836)
+Vector3.new(-5532, 3, 3900)
+Vector3.new(283, -119, 3408)
+Vector3.new(-7881, 177, -3320)
+Vector3.new(-5146, 59, -2858)
+Vector3.new(1043, 263, 3913)
+Vector3.new(-3771, 13, -799)
+Vector3.new(-5572, -101, -1495)
+Color3.fromRGB(220, 160, 80)
+Color3.fromRGB(220, 50, 80)
+Color3.fromRGB(255, 150, 200)
+Color3.fromRGB(100, 200, 255)
+Color3.fromRGB(150, 230, 255)
+Color3.fromRGB(180, 120, 60)
+Vector3.new(927.27, 49.87, -703.73)
+Vector3.new(948, 34, -730)
+
+-- 移除错误抛出的 spawn
+
+local _call415 = _call210:Tab({
+    Title = '挖掘',
+    Icon = 'pickaxe',
+})
+local _call417 = _call210:Tab({
+    Title = '加工',
+    Icon = 'settings',
+})
+local _call419 = _call210:Tab({
+    Title = '出售',
+    Icon = 'coins',
+})
+local _call421 = _call210:Tab({
+    Title = '钓鱼',
+    Icon = 'fish',
+})
+local _call423 = _call210:Tab({
+    Title = '传送物品',
+    Icon = 'move',
+})
+local _call425 = _call210:Tab({
+    Title = '传送',
+    Icon = 'map-pin',
+})
+local _call427 = _call210:Tab({
+    Title = '稀有',
+    Icon = 'star',
+})
+
+-- 挖掘标签页
+_call415:Dropdown({
+    Values = {
+        [1] = '关闭',
+        [2] = '无限伤害',
+        [3] = '65伤害',
+        [4] = '100伤害',
+    },
+    Title = '攻击模式',
+    AllowNone = false,
+    Value = '关闭',
+    Multi = false,
+    Callback = function(_430, _430_2, _430_3, _430_4) end,
+    Desc = '无蓄力·每帧发送。关闭选择"关闭"',
+})
+_call415:Toggle({
+    Value = true,
+    Callback = function(_433, _433_2, _433_3) end,
+    Title = '稀有通知',
+    Desc = '出现稀有资源时通知+ESP',
+})
+_call415:Slider({
+    Value = {
+        Min = 0,
+        Default = 16,
+        Max = 300,
+    },
+    Callback = function(_436, _436_2, _436_3, _436_4) end,
+    Title = '移速',
+    Step = 1,
+})
+_call415:Slider({
+    Value = {
+        Min = 0,
+        Default = 50,
+        Max = 300,
+    },
+    Callback = function(_439, _439_2, _439_3) end,
+    Title = '跳跃',
+    Step = 1,
+})
+_call415:Dropdown({
+    Title = '矿石',
+    AllowNone = false,
+    Value = {
+        [1] = '全部矿石',
+    },
+    Multi = true,
+    Callback = function(_442, _442_2, _442_3) end,
+    Values = {
+        [1] = '全部矿石',
+        [2] = '爆破晶',
+        [3] = '钌矿石',
+        [4] = '冰块',
+        [5] = '大理石',
+        [6] = '翡翠',
+        [7] = '粉钻',
+        [8] = '铱矿',
+        [9] = '古代符文',
+        [10] = '怪石',
+        [11] = '黑曜石',
+        [12] = '红宝石',
+        [13] = '红矿',
+        [14] = '花岗岩',
+        [15] = '黄宝石',
+        [16] = '火山岩',
+        [17] = '金',
+        [18] = '哭泣之魂',
+        [19] = '狂野核心',
+        [20] = '蓝宝石',
+        [21] = '锂矿',
+        [22] = '硫磺',
+        [23] = '铝矿',
+        [24] = '绿水晶',
+        [25] = '煤炭',
+        [26] = '泥土',
+        [27] = '泥巴',
+        [28] = '铅矿',
+        [29] = '砂岩',
+        [30] = '石板岩',
+        [31] = '石英',
+        [32] = '石头',
+        [33] = '铁矿',
+        [34] = '铜矿',
+        [35] = '虚无',
+        [36] = '血色矿',
+        [37] = '雪',
+        [38] = '岩浆',
+        [39] = '盐矿',
+        [40] = '银矿',
+        [41] = '玉石',
+        [42] = '云矿',
+        [43] = '陨石',
+        [44] = '粘土',
+        [45] = '钻石',
+    },
+})
+_call415:Button({
+    Title = '✔ 带来矿石',
+    Callback = function(_445, _445_2, _445_3) end,
+})
+_call415:Toggle({
+    Value = false,
+    Title = '● 自动挖掘',
+    Callback = function(_448, _448_2, _448_3, _448_4, _448_5) end,
+})
+_call415:Dropdown({
+    Title = '树木',
+    AllowNone = false,
+    Value = {
+        [1] = '全部树木',
+    },
+    Multi = true,
+    Callback = function(_451, _451_2, _451_3) end,
+    Values = {
+        [1] = '全部树木',
+        [2] = '白桦',
+        [3] = '白樱花',
+        [4] = '冰木',
+        [5] = '大木',
+        [6] = '枫树',
+        [7] = '甘赞树',
+        [8] = '怪树',
+        [9] = '海草',
+        [10] = '合欢',
+        [11] = '红木',
+        [12] = '金木',
+        [13] = '矿石树',
+        [14] = '蓝樱花',
+        [15] = '冷杉',
+        [16] = '柳树',
+        [17] = '烧焦树',
+        [18] = '松树',
+        [19] = '橡树',
+        [20] = '夜影木',
+        [21] = '椰子树',
+        [22] = '银木',
+        [23] = '樱桃',
+        [24] = '樱花',
+        [25] = '郁郁橡',
+        [26] = '沼泽',
+    },
+})
+_call415:Button({
+    Title = '✔ 带来树木',
+    Callback = function(_454, _454_2, _454_3, _454_4, _454_5) end,
+})
+_call415:Toggle({
+    Value = false,
+    Title = '🌲 传送到树',
+    Callback = function(_457, _457_2, _457_3, _457_4, _457_5) end,
+})
+_call415:Button({
+    Title = '🐟 带来钓获物',
+    Callback = function(_460, _460_2, _460_3, _460_4, _460_5) end,
+})
+
+-- 出售标签页
+_call419:Dropdown({
+    Title = '卖 - 矿石',
+    AllowNone = false,
+    Value = '全部矿石',
+    Multi = false,
+    Callback = function(_463, _463_2, _463_3, _463_4) end,
+    Values = {
+        [1] = '全部矿石',
+        [2] = '爆破晶',
+        [3] = '钌矿石',
+        [4] = '冰块',
+        [5] = '大理石',
+        [6] = '翡翠',
+        [7] = '粉钻',
+        [8] = '铱矿',
+        [9] = '古代符文',
+        [10] = '怪石',
+        [11] = '黑曜石',
+        [12] = '红宝石',
+        [13] = '红矿',
+        [14] = '花岗岩',
+        [15] = '黄宝石',
+        [16] = '火山岩',
+        [17] = '金',
+        [18] = '哭泣之魂',
+        [19] = '狂野核心',
+        [20] = '蓝宝石',
+        [21] = '锂矿',
+        [22] = '硫磺',
+        [23] = '铝矿',
+        [24] = '绿水晶',
+        [25] = '煤炭',
+        [26] = '泥土',
+        [27] = '泥巴',
+        [28] = '铅矿',
+        [29] = '砂岩',
+        [30] = '石板岩',
+        [31] = '石英',
+        [32] = '石头',
+        [33] = '铁矿',
+        [34] = '铜矿',
+        [35] = '虚无',
+        [36] = '血色矿',
+        [37] = '雪',
+        [38] = '岩浆',
+        [39] = '盐矿',
+        [40] = '银矿',
+        [41] = '玉石',
+        [42] = '云矿',
+        [43] = '陨石',
+        [44] = '粘土',
+        [45] = '钻石',
+    },
+})
+_call419:Button({
+    Title = '💰 卖矿石',
+    Callback = function(_466, _466_2, _466_3) end,
+})
+_call419:Dropdown({
+    Title = '卖 - 树木',
+    AllowNone = false,
+    Value = '全部树木',
+    Multi = false,
+    Callback = function(_469) end,
+    Values = {
+        [1] = '全部树木',
+        [2] = '白桦',
+        [3] = '白樱花',
+        [4] = '冰木',
+        [5] = '大木',
+        [6] = '枫树',
+        [7] = '甘赞树',
+        [8] = '怪树',
+        [9] = '海草',
+        [10] = '合欢',
+        [11] = '红木',
+        [12] = '金木',
+        [13] = '矿石树',
+        [14] = '蓝樱花',
+        [15] = '冷杉',
+        [16] = '柳树',
+        [17] = '烧焦树',
+        [18] = '松树',
+        [19] = '橡树',
+        [20] = '夜影木',
+        [21] = '椰子树',
+        [22] = '银木',
+        [23] = '樱桃',
+        [24] = '樱花',
+        [25] = '郁郁橡',
+        [26] = '沼泽',
+    },
+})
+_call419:Button({
+    Title = '💰 卖树木',
+    Callback = function(_472, _472_2, _472_3, _472_4, _472_5) end,
+})
+_call419:Dropdown({
+    Title = '钓获物类别',
+    AllowNone = false,
+    Value = '全部',
+    Multi = false,
+    Callback = function(_475, _475_2, _475_3, _475_4, _475_5, _475_6) end,
+    Values = {
+        [1] = '全部',
+        [2] = '海洋生物',
+        [3] = '宝藏',
+        [4] = '垃圾',
+    },
+})
+_call419:Button({
+    Title = '🐟 卖钓获物',
+    Callback = function(_478, _478_2, _478_3, _478_4, _478_5) end,
+})
+
+-- 传送物品标签页
+_call423:Button({
+    Title = '📌 设置传送点',
+    Callback = function(_481, _481_2, _481_3, _481_4, _481_5) end,
+})
+_call423:Button({
+    Title = '🗑 删除传送点',
+    Callback = function(_484) end,
+})
+_call423:Toggle({
+    Value = false,
+    Callback = function(_487, _487_2, _487_3) end,
+    Title = '同类型（点击选择）',
+    Desc = '开启后点击Grab里的物品选择同名物品',
+})
+_LocalPlayer223:GetMouse().Button1Down:Connect(function(_493, _493_2, _493_3) end)
+_call423:Toggle({
+    Value = false,
+    Title = '单选（最近一个）',
+    Callback = function(_496, _496_2) end,
+})
+_call423:Button({
+    Title = '🚀 传送',
+    Callback = function(_499, _499_2, _499_3, _499_4, _499_5) end,
+})
+
+-- 加工标签页
+_call417:Button({
+    Title = '🔍 扫描熔炉',
+    Callback = function(_502, _502_2, _502_3) end,
+})
+_call417:Dropdown({
+    Title = '选择熔炉',
+    AllowNone = false,
+    Value = '未扫描',
+    Multi = false,
+    Callback = function(_505, _505_2, _505_3, _505_4, _505_5) end,
+    Values = {
+        [1] = '未扫描',
+    },
+})
+_call417:Button({
+    Title = '🔥 处理矿石',
+    Callback = function(_508, _508_2) end,
+})
+_call417:Space({})
+_call417:Button({
+    Title = '🔍 扫描锯木机',
+    Callback = function(_513, _513_2, _513_3, _513_4) end,
+})
+_call417:Dropdown({
+    Title = '选择锯木机',
+    AllowNone = false,
+    Value = '未扫描',
+    Multi = false,
+    Callback = function(_516, _516_2, _516_3) end,
+    Values = {
+        [1] = '未扫描',
+    },
+})
+_call417:Button({
+    Title = '🪵 处理木材',
+    Callback = function(_519, _519_2) end,
+})
+_call417:Space({})
+_call417:Button({
+    Title = '🔍 扫描抛光机',
+    Callback = function(_524, _524_2, _524_3, _524_4) end,
+})
+_call417:Dropdown({
+    Title = '选择抛光机',
+    AllowNone = false,
+    Value = '未扫描',
+    Multi = false,
+    Callback = function(_527, _527_2, _527_3, _527_4) end,
+    Values = {
+        [1] = '未扫描',
+    },
+})
+_call417:Button({
+    Title = '✨ 自动抛光',
+    Callback = function() end,
+})
+_call417:Space({})
+_call417:Button({
+    Title = '🔍 扫描筛沙机',
+    Callback = function(_535) end,
+})
+_call417:Dropdown({
+    Title = '选择筛沙机',
+    AllowNone = false,
+    Value = '未扫描',
+    Multi = false,
+    Callback = function(_538) end,
+    Values = {
+        [1] = '未扫描',
+    },
+})
+_call417:Button({
+    Title = '● 自动筛沙',
+    Callback = function(_541, _541_2, _541_3, _541_4, _541_5) end,
+})
+
+-- 传送标签页
+_call425:Button({
+    Title = '🏠 家',
+    Callback = function(_544, _544_2) end,
+})
+_call425:Button({
+    Title = '售卖点',
+    Callback = function(_547, _547_2) end,
+})
+_call425:Button({
+    Title = '土地购买',
+    Callback = function(_550, _550_2) end,
+})
+_call425:Button({
+    Title = 'UCS',
+    Callback = function(_553, _553_2) end,
+})
+_call425:Button({
+    Title = '家具店',
+    Callback = function(_556, _556_2) end,
+})
+_call425:Button({
+    Title = '材料店',
+    Callback = function(_559, _559_2) end,
+})
+_call425:Button({
+    Title = '汽车店',
+    Callback = function(_562, _562_2) end,
+})
+_call425:Button({
+    Title = '航海发现',
+    Callback = function(_565, _565_2) end,
+})
+_call425:Button({
+    Title = '大理山谷',
+    Callback = function(_568, _568_2) end,
+})
+_call425:Button({
+    Title = '采石场',
+    Callback = function(_571, _571_2) end,
+})
+_call425:Button({
+    Title = '丛林入口',
+    Callback = function(_574, _574_2) end,
+})
+_call425:Button({
+    Title = '死亡区',
+    Callback = function(_577, _577_2) end,
+})
+_call425:Button({
+    Title = '(？)店',
+    Callback = function(_580, _580_2) end,
+})
+_call425:Button({
+    Title = '黑市',
+    Callback = function(_583, _583_2) end,
+})
+_call425:Button({
+    Title = '石质摇篓',
+    Callback = function(_586, _586_2) end,
+})
+_call425:Button({
+    Title = '沙丘祭坛',
+    Callback = function(_589, _589_2) end,
+})
+_call425:Button({
+    Title = '杂生铍祭坛',
+    Callback = function(_592, _592_2) end,
+})
+_call425:Button({
+    Title = '二层巫师',
+    Callback = function(_595, _595_2) end,
+})
+_call425:Button({
+    Title = '二层商店',
+    Callback = function(_598, _598_2) end,
+})
+_call425:Button({
+    Title = '魔法祭坛',
+    Callback = function(_601, _601_2) end,
+})
+_call425:Button({
+    Title = '月亮宫',
+    Callback = function(_604, _604_2) end,
+})
+_call425:Button({
+    Title = '孪子洞穴',
+    Callback = function(_607, _607_2) end,
+})
+_call425:Button({
+    Title = '罗斯维尔(二岛)',
+    Callback = function(_610, _610_2) end,
+})
+_call425:Button({
+    Title = '罗斯韦尔矿',
+    Callback = function(_613, _613_2) end,
+})
+_call425:Button({
+    Title = '攀爬天赋处',
+    Callback = function(_616, _616_2) end,
+})
+_call425:Button({
+    Title = '云矿',
+    Callback = function(_619, _619_2) end,
+})
+_call425:Button({
+    Title = 'Vi的逻辑',
+    Callback = function(_622, _622_2) end,
+})
+_call425:Button({
+    Title = 'Vi的实验室',
+    Callback = function(_625, _625_2) end,
+})
+_call425:Button({
+    Title = '盐矿洞',
+    Callback = function(_628, _628_2) end,
+})
+_call425:Button({
+    Title = '结晶深渊',
+    Callback = function(_631, _631_2) end,
+})
+_call425:Button({
+    Title = '灼热之谷',
+    Callback = function(_634, _634_2) end,
+})
+_call425:Button({
+    Title = '被诅咒的洞穴',
+    Callback = function(_637, _637_2) end,
+})
+_call425:Button({
+    Title = '矿工藏身处',
+    Callback = function(_640, _640_2) end,
+})
+_call425:Button({
+    Title = '未知者',
+    Callback = function(_643, _643_2) end,
+})
+_call425:Button({
+    Title = '石油设备',
+    Callback = function(_646, _646_2) end,
+})
+_call425:Button({
+    Title = '樱岛岛',
+    Callback = function(_649, _649_2) end,
+})
+_call425:Button({
+    Title = '陨石(地皮2号位)',
+    Callback = function(_652, _652_2) end,
+})
+_call425:Button({
+    Title = '陨石(大理山谷)',
+    Callback = function(_655, _655_2) end,
+})
+_call425:Button({
+    Title = '陨石(丛林入口)',
+    Callback = function(_658, _658_2) end,
+})
+_call425:Button({
+    Title = '出生点',
+    Callback = function(_661, _661_2) end,
+})
+_call425:Button({
+    Title = '[钓]闪光池',
+    Callback = function(_664, _664_2) end,
+})
+_call425:Button({
+    Title = '[钓]结晶深渊湖',
+    Callback = function(_667, _667_2) end,
+})
+_call425:Button({
+    Title = '[钓]沼泽地',
+    Callback = function(_670, _670_2) end,
+})
+_call425:Button({
+    Title = '[钓]面砂湖',
+    Callback = function(_673, _673_2) end,
+})
+_call425:Button({
+    Title = '[钓]灵柩',
+    Callback = function(_676, _676_2) end,
+})
+_call425:Button({
+    Title = '[钓]岩浆',
+    Callback = function(_679, _679_2) end,
+})
+_call425:Button({
+    Title = '[喷]购买荧光棒',
+    Callback = function(_682, _682_2) end,
+})
+_call425:Button({
+    Title = '[喷]电脑1',
+    Callback = function(_685, _685_2) end,
+})
+_call425:Button({
+    Title = '[喷]电脑2',
+    Callback = function(_688, _688_2) end,
+})
+_call425:Button({
+    Title = '[喷]电脑3',
+    Callback = function(_691, _691_2) end,
+})
+_call425:Button({
+    Title = '[喷]电脑4',
+    Callback = function(_694, _694_2) end,
+})
+_call425:Button({
+    Title = '[喷]火箭降落点',
+    Callback = function(_697, _697_2) end,
+})
+
+-- 稀有标签页
+_call427:Toggle({
+    Value = true,
+    Title = '稀有通知',
+    Callback = function(_700, _700_2, _700_3, _700_4, _700_5, _700_6) end,
+})
+_call427:Dropdown({
+    Title = '选择稀有资源',
+    AllowNone = false,
+    Value = '(无稀有资源)',
+    Multi = false,
+    Callback = function(_703, _703_2, _703_3, _703_4) end,
+    Values = {
+        [1] = '(无稀有资源)',
+    },
+})
+_call427:Button({
+    Title = '📍 传送到选中',
+    Callback = function() end,
+})
+_call427:Button({
+    Title = '🚫 忽略（卖时排除）',
+    Callback = function(_709) end,
+})
+_call427:Button({
+    Title = '✅ 取消忽略',
+    Callback = function(_712) end,
+})
+_call427:Button({
+    Title = '👁 刷新列表',
+    Callback = function(_715) end,
+})
+
+-- 钓鱼标签页
+_call421:Toggle({
+    Value = false,
+    Title = '快速钓鱼',
+    Callback = function(_718) end,
+})
+_call421:Toggle({
+    Value = false,
+    Callback = function(_721) end,
+    Title = '透视大鱼',
+    Desc = '透视Workspace.BigFish里的所有物体',
+})
+_call421:Toggle({
+    Value = false,
+    Callback = function(_724, _724_2, _724_3, _724_4, _724_5, _724_6) end,
+    Title = '透视窝点',
+    Desc = '透视Workspace.MouseIgnore.FishHotspots里的所有物体',
+})
+
+-- 其他标签页
+local _call782 = _call210:Tab({
+    Title = '其他',
+    Icon = 'more-horizontal',
+})
+
+_call782:Button({
+    Callback = function(_785) end,
+    Title = '🚀 飞行',
+    Desc = '点击弹出飞行UI（含加速减速）',
+})
+_call782:Toggle({
+    Value = false,
+    Callback = function(_788, _788_2, _788_3, _788_4, _788_5) end,
+    Title = '✈ 飞行',
+    Desc = 'WASD移动 Space上升 LeftCtrl下降 E加速',
+})
+_call782:Button({
+    Callback = function(_791, _791_2, _791_3) end,
+    Title = '🛡 获取死亡不掉落',
+    Desc = '自动完成任务并领取奖励',
+})
+
+print('✅ Moon Pixel 已加载（无密钥版本）')
