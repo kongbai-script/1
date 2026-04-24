@@ -1,82 +1,131 @@
--- 放在 StarterGui 下的 LocalScript 中
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local repo = 'https://raw.githubusercontent.com/mstudio45/Obsidian/main/'
+local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+
+local player = game:GetService("Players").LocalPlayer
 local runService = game:GetService("RunService")
 local userInputService = game:GetService("UserInputService")
+local lighting = game:GetService("Lighting")
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "EnemyLockGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
+local notifysound = 4590657391
+local PlayingSound = true
 
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 260, 0, 120)
-mainFrame.Position = UDim2.new(0, 20, 0.5, -60)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-mainFrame.BackgroundTransparency = 0.1
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
+function Sound()
+    local sound = Instance.new("Sound", game:GetService("SoundService"))
+    sound.Volume = 2.5
+    sound.SoundId = "rbxassetid://" .. notifysound
+    sound.Playing = PlayingSound and true or false
+    game:GetService("Debris"):AddItem(sound, 2)
+end
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 20)
-mainCorner.Parent = mainFrame
+Sound()
 
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Thickness = 2
-uiStroke.Color = Color3.fromRGB(255, 170, 0)
-uiStroke.Transparency = 0.3
-uiStroke.Parent = mainFrame
+getgenv().KeycardESP = {
+    Enabled = false
+}
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 40)
-titleLabel.Position = UDim2.new(0, 0, 0, 10)
-titleLabel.Text = "兽化逃亡 | NPC 锁定"
-titleLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-titleLabel.TextScaled = true
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.BackgroundTransparency = 1
-titleLabel.Parent = mainFrame
+getgenv().ItemESP = {
+    Enabled = false
+}
 
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, 0, 0, 30)
-statusLabel.Position = UDim2.new(0, 0, 0, 48)
-statusLabel.Text = "未锁定 (速度=16)"
-statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-statusLabel.TextScaled = true
-statusLabel.Font = Enum.Font.Gotham
-statusLabel.BackgroundTransparency = 1
-statusLabel.Parent = mainFrame
+getgenv().EnemyLock = {
+    Enabled = false
+}
 
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 140, 0, 45)
-toggleButton.Position = UDim2.new(0.5, -70, 0, 82)
-toggleButton.Text = "开启锁定"
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextScaled = true
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-toggleButton.BorderSizePixel = 0
-toggleButton.Parent = mainFrame
+getgenv().LiquidDelete = {
+    Enabled = false
+}
 
-local btnCorner = Instance.new("UICorner")
-btnCorner.CornerRadius = UDim.new(0, 12)
-btnCorner.Parent = toggleButton
+local originalSpeeds = {}
 
-local dragBar = Instance.new("Frame")
-dragBar.Size = UDim2.new(0.4, 0, 0, 4)
-dragBar.Position = UDim2.new(0.3, 0, 0, 8)
-dragBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-dragBar.BackgroundTransparency = 0.4
-dragBar.Parent = mainFrame
+local function createKeycardESP()
+    if not getgenv().KeycardESP.Enabled then return end
+    
+    local map = workspace:FindFirstChild("Map")
+    if not map then return end
+    
+    for _, obj in ipairs(map:GetDescendants()) do
+        if obj.Name == "Keycard" then
+            local tag = obj:FindFirstChild("KeycardTag")
+            if not tag then
+                local billboard = Instance.new("BillboardGui")
+                billboard.Name = "KeycardTag"
+                billboard.Parent = obj
+                billboard.Size = UDim2.new(0, 100, 0, 30)
+                billboard.AlwaysOnTop = true
+                billboard.StudsOffset = Vector3.new(0, 1, 0)
+                
+                local text = Instance.new("TextLabel")
+                text.Parent = billboard
+                text.Size = UDim2.new(1, 0, 1, 0)
+                text.BackgroundTransparency = 1
+                text.TextColor3 = Color3.fromRGB(255, 255, 0)
+                text.TextScaled = true
+                text.Text = "钥匙卡"
+                text.Font = Enum.Font.GothamBold
+                text.TextStrokeTransparency = 0.3
+                text.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            end
+        end
+    end
+end
 
-local dragCorner = Instance.new("UICorner")
-dragCorner.CornerRadius = UDim.new(0, 2)
-dragCorner.Parent = dragBar
+local function destroyKeycardESP()
+    local map = workspace:FindFirstChild("Map")
+    if map then
+        for _, obj in ipairs(map:GetDescendants()) do
+            if obj.Name == "Keycard" then
+                local tag = obj:FindFirstChild("KeycardTag")
+                if tag then tag:Destroy() end
+            end
+        end
+    end
+end
 
-local enabled = false
-local dragging = false
-local dragStartPos = nil
-local frameStartPos = nil
+local function createItemESP()
+    if not getgenv().ItemESP.Enabled then return end
+    
+    local map = workspace:FindFirstChild("Map")
+    if not map then return end
+    
+    for _, item in ipairs(map:GetChildren()) do
+        if item:IsA("Tool") then
+            local tag = item:FindFirstChild("ItemTag")
+            if not tag then
+                local billboard = Instance.new("BillboardGui")
+                billboard.Name = "ItemTag"
+                billboard.Parent = item
+                billboard.Size = UDim2.new(0, 120, 0, 30)
+                billboard.AlwaysOnTop = true
+                billboard.StudsOffset = Vector3.new(0, 2, 0)
+                
+                local text = Instance.new("TextLabel")
+                text.Parent = billboard
+                text.Size = UDim2.new(1, 0, 1, 0)
+                text.BackgroundTransparency = 1
+                text.TextColor3 = Color3.fromRGB(0, 255, 0)
+                text.TextScaled = true
+                text.Text = item.Name
+                text.Font = Enum.Font.GothamBold
+                text.TextStrokeTransparency = 0.3
+                text.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            end
+        end
+    end
+end
+
+local function destroyItemESP()
+    local map = workspace:FindFirstChild("Map")
+    if map then
+        for _, item in ipairs(map:GetChildren()) do
+            if item:IsA("Tool") then
+                local tag = item:FindFirstChild("ItemTag")
+                if tag then tag:Destroy() end
+            end
+        end
+    end
+end
 
 local function getAllEnemyHumanoids()
     local humanoids = {}
@@ -93,9 +142,14 @@ local function getAllEnemyHumanoids()
 end
 
 local function lockEnemies()
+    if not getgenv().EnemyLock.Enabled then return end
+    
     local humanoids = getAllEnemyHumanoids()
     for _, humanoid in ipairs(humanoids) do
         if humanoid.WalkSpeed ~= 0 then
+            if not originalSpeeds[humanoid] then
+                originalSpeeds[humanoid] = humanoid.WalkSpeed
+            end
             humanoid.WalkSpeed = 0
         end
     end
@@ -104,104 +158,251 @@ end
 local function unlockEnemies()
     local humanoids = getAllEnemyHumanoids()
     for _, humanoid in ipairs(humanoids) do
-        if humanoid.WalkSpeed ~= 16 then
-            humanoid.WalkSpeed = 16
+        local original = originalSpeeds[humanoid]
+        if original then
+            humanoid.WalkSpeed = original
+        else
+            if humanoid.WalkSpeed == 0 then
+                humanoid.WalkSpeed = 16
+            end
         end
     end
+    originalSpeeds = {}
 end
 
-local function updateUI()
-    if enabled then
-        toggleButton.Text = "关闭锁定"
-        toggleButton.BackgroundColor3 = Color3.fromRGB(220, 60, 50)
-        statusLabel.Text = "已锁定 (速度=0)"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        titleLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-    else
-        toggleButton.Text = "开启锁定"
-        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-        statusLabel.Text = "未锁定 (速度=16)"
-        statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-        titleLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-    end
-end
-
-local function toggleLock()
-    enabled = not enabled
-    
-    if enabled then
-        lockEnemies()
-    else
-        unlockEnemies()
-    end
-    
-    updateUI()
-end
-
-toggleButton.MouseButton1Click:Connect(toggleLock)
-
-local function startDrag(input)
-    dragging = true
-    dragStartPos = input.Position
-    frameStartPos = mainFrame.Position
-end
-
-local function onDrag(input)
-    if dragging then
-        local delta = input.Position - dragStartPos
-        local newX = frameStartPos.X.Offset + delta.X
-        local newY = frameStartPos.Y.Offset + delta.Y
-        
-        newX = math.clamp(newX, 0, screenGui.AbsoluteSize.X - mainFrame.AbsoluteSize.X)
-        newY = math.clamp(newY, 0, screenGui.AbsoluteSize.Y - mainFrame.AbsoluteSize.Y)
-        
-        mainFrame.Position = UDim2.new(0, newX, 0, newY)
-    end
-end
-
-local function endDrag()
-    dragging = false
-end
-
-mainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
-       input.UserInputType == Enum.UserInputType.Touch then
-        startDrag(input)
-    end
-end)
-
-userInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or
-       input.UserInputType == Enum.UserInputType.Touch then
-        onDrag(input)
-    end
-end)
-
-userInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or
-       input.UserInputType == Enum.UserInputType.Touch then
-        endDrag()
-    end
-end)
-
-local enemyFolder = workspace:FindFirstChild("Enemy")
-if enemyFolder then
-    enemyFolder.DescendantAdded:Connect(function(descendant)
-        task.wait(0.1)
-        if descendant:IsA("Humanoid") then
-            if enabled then
+local function setupEnemyListener()
+    local enemyFolder = workspace:FindFirstChild("Enemy")
+    if enemyFolder then
+        enemyFolder.DescendantAdded:Connect(function(descendant)
+            task.wait(0.1)
+            if descendant:IsA("Humanoid") and getgenv().EnemyLock.Enabled then
+                if not originalSpeeds[descendant] then
+                    originalSpeeds[descendant] = descendant.WalkSpeed
+                end
                 descendant.WalkSpeed = 0
-            else
-                descendant.WalkSpeed = 16
+            end
+        end)
+    end
+end
+
+local liquidConnection = nil
+local function startLiquidDelete()
+    if liquidConnection then liquidConnection:Disconnect() end
+    liquidConnection = runService.RenderStepped:Connect(function()
+        if not getgenv().LiquidDelete.Enabled then return end
+        
+        local map = workspace:FindFirstChild("Map")
+        if not map then return end
+        
+        for _, child in ipairs(map:GetChildren()) do
+            local hazard = child:FindFirstChild("Hazard")
+            if hazard then
+                for _, obj in ipairs(hazard:GetChildren()) do
+                    pcall(function() obj:Destroy() end)
+                end
             end
         end
     end)
 end
 
+local function stopLiquidDelete()
+    if liquidConnection then
+        liquidConnection:Disconnect()
+        liquidConnection = nil
+    end
+end
+
+local Window = Library:CreateWindow({
+    Title = '兽化逃亡脚本 作者:空白',
+    Center = true,
+    ToggleKeybind = Enum.KeyCode.RightShift,
+    AutoShow = true
+})
+
+local Options = Library.Options
+local Toggles = Library.Toggles
+
+local MainTab = Window:AddTab('功能列表')
+local UISettingsTab = Window:AddTab('UI设置')
+
+local ESPGroup = MainTab:AddLeftGroupbox('透视')
+
+ESPGroup:AddToggle('KeycardESP', {
+    Text = '钥匙卡透视',
+    Default = false,
+    Callback = function(value)
+        getgenv().KeycardESP.Enabled = value
+        if value then
+            createKeycardESP()
+            Library:Notify('钥匙卡透视已启用', 2)
+        else
+            destroyKeycardESP()
+            Library:Notify('钥匙卡透视已禁用', 2)
+        end
+        if PlayingSound then Sound() end
+    end
+})
+
+ESPGroup:AddToggle('ItemESP', {
+    Text = '物品透视',
+    Default = false,
+    Callback = function(value)
+        getgenv().ItemESP.Enabled = value
+        if value then
+            createItemESP()
+            Library:Notify('物品透视已启用', 2)
+        else
+            destroyItemESP()
+            Library:Notify('物品透视已禁用', 2)
+        end
+        if PlayingSound then Sound() end
+    end
+})
+
+local CombatGroup = MainTab:AddRightGroupbox('战斗')
+
+CombatGroup:AddToggle('EnemyLock', {
+    Text = '怪物锁定',
+    Default = false,
+    Callback = function(value)
+        getgenv().EnemyLock.Enabled = value
+        if value then
+            lockEnemies()
+            Library:Notify('怪物锁定已启用', 2)
+        else
+            unlockEnemies()
+            Library:Notify('怪物锁定已禁用', 2)
+        end
+        if PlayingSound then Sound() end
+    end
+})
+
+local MiscGroup = MainTab:AddLeftGroupbox('其他')
+
+MiscGroup:AddToggle('LiquidDelete', {
+    Text = '液体清除',
+    Default = false,
+    Callback = function(value)
+        getgenv().LiquidDelete.Enabled = value
+        if value then
+            startLiquidDelete()
+            Library:Notify('液体清除已启用', 2)
+        else
+            stopLiquidDelete()
+            Library:Notify('液体清除已禁用', 2)
+        end
+        if PlayingSound then Sound() end
+    end
+})
+
+MiscGroup:AddDivider()
+MiscGroup:AddButton({
+    Text = '立即清除液体',
+    Func = function()
+        local map = workspace:FindFirstChild("Map")
+        if not map then 
+            Library:Notify('未找到目标', 2)
+            return
+        end
+        
+        local count = 0
+        for _, child in ipairs(map:GetChildren()) do
+            local hazard = child:FindFirstChild("Hazard")
+            if hazard then
+                for _, obj in ipairs(hazard:GetChildren()) do
+                    pcall(function() 
+                        obj:Destroy() 
+                        count = count + 1
+                    end)
+                end
+            end
+        end
+        
+        Library:Notify('已清除 ' .. count .. ' 个', 2)
+        if PlayingSound then Sound() end
+    end
+})
+
+local ToolGroup = MainTab:AddRightGroupbox('工具')
+
+ToolGroup:AddButton({
+    Text = "重置设置",
+    Func = function()
+        if Toggles then
+            for _, toggle in pairs(Toggles) do
+                pcall(function()
+                    toggle:SetValue(false)
+                end)
+            end
+        end
+        Library:Notify('已重置', 2)
+        if PlayingSound then Sound() end
+    end
+})
+
+ToolGroup:AddButton({
+    Text = "卸载",
+    Func = function()
+        Library:Notify('正在卸载...', 2)
+        task.wait(1)
+        Library:Unload()
+    end
+})
+
+ToolGroup:AddToggle('PlaySound', {
+    Text = '提示音',
+    Default = true,
+    Callback = function(value)
+        PlayingSound = value
+        if value then
+            Sound()
+        end
+    end
+})
+
+local UIGroup = UISettingsTab:AddLeftGroupbox('界面设置')
+
+UIGroup:AddLabel('配置管理', true)
+UIGroup:AddLabel('主题管理', false)
+UIGroup:AddLabel('快捷键: RightShift', false)
+
+local folder_path = "兽化逃亡脚本"
+local file_path = "Settings"
+
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({ 'MenuKeybind' })
+
+ThemeManager:SetFolder(folder_path)
+SaveManager:SetFolder(folder_path .. '/' .. file_path)
+
+Library.ToggleKeybind = Enum.KeyCode.RightShift
+
+SaveManager:BuildConfigSection(UISettingsTab)
+
+ThemeManager:ApplyToTab(UISettingsTab)
+
+pcall(function()
+    SaveManager:LoadAutoloadConfig()
+end)
+
 runService.RenderStepped:Connect(function()
-    if enabled then
+    if getgenv().KeycardESP.Enabled then
+        createKeycardESP()
+    end
+    if getgenv().ItemESP.Enabled then
+        createItemESP()
+    end
+    if getgenv().EnemyLock.Enabled then
         lockEnemies()
     end
 end)
 
-updateUI()
+setupEnemyListener()
+
+task.wait(0.5)
+Sound()
+
+Library:Notify('兽化逃亡脚本 作者:空白 已加载', 3)
+Library:Notify('按 RightShift 打开菜单', 3)
